@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LiveNear - Street Performance Finder</title>
+
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Leaflet map CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+</head>
+<body>
+  <header>
+    <h1>🎵 LiveNear</h1>
+    <p>Find live performers near you in real time.</p>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h2>Create Performance</h2>
+
+      <input id="artistName" type="text" placeholder="Artist name" />
+      <input id="genre" type="text" placeholder="Genre: Music, Dance, Theatre..." />
+      <input id="locationName" type="text" placeholder="Location name" />
+      <input id="time" type="text" placeholder="Time: Today 6 PM" />
+      <input id="liveLink" type="text" placeholder="Livestream link" />
+
+      <button onclick="createEvent()">Create Event</button>
+
+      <p class="hint">
+        Demo uses random locations around Montreal.
+      </p>
+    </section>
+
+    <section class="map-section">
+      <div id="map"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Live Events</h2>
+      <div id="eventList"></div>
+    </section>
+  </main>
+
+  <!-- Leaflet map JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script src="app.js"></script>
+</body>
+</html>
