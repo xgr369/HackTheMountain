@@ -22,13 +22,11 @@ app.use(express.json());
 const EVENTS_DIR = path.join(__dirname, "storage", "events");
 
 function getKey(json) {
-	if (!json.lat || !json.lng || !json.time) {
+	if (json.lat === undefined || json.lng === undefined) {
 		throw new Error("invalid fields");
 	}
 
-	const time = new Date(json.time)
-		.toISOString()
-		.replace(/[:.]/g, "-");
+	const time = Math.floor(Date.now() / 1000);
 
 	const unique = crypto.randomUUID().slice(0, 8);
 
@@ -111,11 +109,11 @@ app.get("/server/getevent", async (req, res) => {
 // Example: /server/events
 app.get("/server/events", async (req, res) => {
 	const events = await readAllEvents();
-	const now = new Date();
+	const now = Math.floor(Date.now() / 1000);
 
 	const upcomingEvents = events
-		.filter(event => new Date(event.timestamp) >= now)
-		.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+		.filter(event => event.time >= now)
+		.sort((a, b) => a.time - b.time);
 
 	res.json(upcomingEvents);
 });
@@ -126,32 +124,30 @@ app.get("/server/events", async (req, res) => {
 //   "artistName": "Bob",
 //	 "genre": "Reggae",
 //   "locationName": "Old Port",
-//   "time": "1204912401924",
 //   "lat": -127
 //	 "lng": 128
 //   "tags": ["music", "street"],
-//   "media": "image.jpg"
+//   "media": ["image.jpg"]
 // }
 app.post("/server/addevent", async (req, res) => {
 	const body = req.body;
 
-	if (!body || !body.lat || !body.lng || !body.time) {
+	if (!body || body.lat === undefined || body.lng === undefined) {
 		return res.status(400).json({
-			error: "Missing required fields: lat, lng or time"
+			error: "Missing required fields"
 		});
 	}
 
-	const { artistName, genre, locationName, time, lat, lng, tags, media } = body;
+	const { artistName, genre, locationName, lat, lng, tags, media } = body;
 
 	const json = {
-		artistName: artistName || "Unknown artist",
+		artistName: artistName,
 		genre: genre,
 		locationName: locationName,
-		time: time,
-		lat,
-		lng,
+		lat: lat,
+		lng: lng,
 		tags: tags || [],
-		media: media || null
+		media: media || [],
 	};
 	
 	try {
