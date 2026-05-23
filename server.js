@@ -22,17 +22,17 @@ app.use(express.json());
 const EVENTS_DIR = path.join(__dirname, "storage", "events");
 
 function getKey(json) {
-	if (!json.lat || !json.lng || !json.timestamp) {
+	if (!json.lat || !json.lng || !json.time) {
 		throw new Error("invalid fields");
 	}
 
-	const timestamp = new Date(json.timestamp)
+	const time = new Date(json.time)
 		.toISOString()
 		.replace(/[:.]/g, "-");
 
 	const unique = crypto.randomUUID().slice(0, 8);
 
-	return `${json.lat}_${json.lng}_${timestamp}_${unique}`;
+	return `${json.lat}_${json.lng}_${time}_${unique}`;
 }
 
 async function readEvent(key) {
@@ -123,32 +123,34 @@ app.get("/server/events", async (req, res) => {
 // POST add event
 // Example body:
 // {
-//   "artist": "Bob",
-//   "timestamp": "2026-05-25T19:00:00",
-//   "lat":
-//	 "lng":
-//   "location": "Old Port",
+//   "artistName": "Bob",
+//	 "genre": "Reggae",
+//   "locationName": "Old Port",
+//   "time": "1204912401924",
+//   "lat": -127
+//	 "lng": 128
 //   "tags": ["music", "street"],
 //   "media": "image.jpg"
 // }
 app.post("/server/addevent", async (req, res) => {
 	const body = req.body;
 
-	if (!body || !body.lag || !body.lng || !body.timestamp) {
+	if (!body || !body.lat || !body.lng || !body.time) {
 		return res.status(400).json({
-			error: "Missing required fields: lat, lng or timestamp"
+			error: "Missing required fields: lat, lng or time"
 		});
 	}
 
-	const { artist, timestamp, location, tags, media } = body;
+	const { artistName, genre, locationName, time, lat, lng, tags, media } = body;
 
 	const json = {
-		artist: artist || "Unknown artist",
+		artistName: artistName || "Unknown artist",
+		genre: genre,
+		locationName: locationName,
+		time: time,
 		lat,
 		lng,
-		location,
 		tags: tags || [],
-		timestamp: timestamp,
 		media: media || null
 	};
 	
