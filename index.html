@@ -3,52 +3,78 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LiveNear - Street Performance Finder</title>
-
+  <title>LiveNear — Montreal Music Map</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="style.css" />
-
-  <!-- Leaflet map CSS -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
 </head>
 <body>
+
   <header>
-    <h1>🎵 LiveNear</h1>
-    <p>Find live performers near you in real time.</p>
+    <div class="header-inner">
+      <div class="logo">🎵 LiveNear</div>
+      <div class="header-sub">Montreal Music Taste Map — Find where to perform</div>
+    </div>
   </header>
 
+  <!-- Genre filter tabs -->
+  <div class="tabs-bar">
+    <div id="genreTabs" class="genre-tabs"></div>
+  </div>
+
   <main>
-    <section class="panel">
-      <h2>Create Performance</h2>
 
-      <input id="artistName" type="text" placeholder="Artist name" />
-      <input id="genre" type="text" placeholder="Genre: Music, Dance, Theatre..." />
-      <input id="locationName" type="text" placeholder="Location name" />
-      <input id="time" type="text" placeholder="Time: Today 6 PM" />
-      <input id="liveLink" type="text" placeholder="Livestream link" />
+    <!-- LEFT: Neighbourhood list -->
+    <aside class="sidebar left-sidebar">
+      <div class="sidebar-title">
+        <span>🗺 Neighbourhoods</span>
+        <span class="sidebar-hint">Click to explore</span>
+      </div>
+      <div id="hoodList" class="hood-list"></div>
 
-      <button onclick="createEvent()">Create Event</button>
+      <div class="legend-box">
+        <div class="legend-title">Genre Colours</div>
+        <div id="genreLegend" class="legend-grid"></div>
+      </div>
+    </aside>
 
-      <p class="hint">
-        Demo uses random locations around Montreal.
-      </p>
-    </section>
-
+    <!-- CENTER: Map -->
     <section class="map-section">
       <div id="map"></div>
+      <!-- Neighbourhood detail overlay -->
+      <div id="neighbourhoodDetail" class="neighbourhood-detail"></div>
     </section>
 
-    <section class="panel">
-      <h2>Live Events</h2>
-      <div id="eventList"></div>
-    </section>
+    <!-- RIGHT: Create event + Event list -->
+    <aside class="sidebar right-sidebar">
+
+      <div class="panel create-panel">
+        <div class="panel-title">🎤 Create Performance</div>
+
+        <input id="artistName" type="text" placeholder="Artist name *" />
+        <input id="genre" type="text" placeholder="Genre: Jazz/Blues, Hip-Hop, Rock…" />
+        <select id="neighbourhoodSelect"></select>
+        <input id="locationName" type="text" placeholder="Venue / spot name *" />
+        <input id="time" type="text" placeholder="Time: Today 6 PM *" />
+        <input id="liveLink" type="text" placeholder="Livestream link (optional)" />
+
+        <button class="create-btn" onclick="createEvent()">Create Event</button>
+      </div>
+
+      <div id="eventsPanel" class="panel events-panel">
+        <div class="panel-title">
+          <span id="eventsTitle">Live Events</span>
+          <button id="clearFilter" class="clear-filter-btn" style="display:none" onclick="clearEventFilter()">✕ All areas</button>
+        </div>
+        <div id="eventList"></div>
+      </div>
+
+    </aside>
+
   </main>
 
-  <!-- Leaflet map JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
   <script src="app.js"></script>
 </body>
 </html>
