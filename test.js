@@ -1,7 +1,7 @@
 async function testAddEvent() {
     try {
         const response = await fetch(
-            "http://localhost:3000/server/addevent",
+            "http://172.22.96.1:999/server/addevent",
             {
                 method: "POST",
                 headers: {
