@@ -1,3 +1,5 @@
+const DOMAIN_URL = "http://172.22.96.1:999";
+
 // ─────────────────────────────────────────────
 //  Genre Config
 // ─────────────────────────────────────────────
@@ -23,10 +25,6 @@ const neighbourhoods = [
   // ── EAST ISLAND ──────────────────────────────
   {
     name: "Rivière-des-Prairies–Pointe-aux-Trembles",
-    topGenre: "Pop",
-    genres: { "Pop": 34, "Rock": 26, "Hip-Hop": 18, "Electronic": 12, "Folk/World": 6, "Jazz/Blues": 4 },
-    description: "Far-east waterfront community — pop radio staples and classic rock.",
-    venues: ["Maison de la culture PAT", "Centre culturel de Pointe-aux-Trembles"],
     center: [45.6724, -73.5214],
     polygon: [
       [45.63421,-73.56834],[45.64324,-73.55452],[45.64839,-73.54485],[45.63769,-73.52141],
@@ -50,10 +48,6 @@ const neighbourhoods = [
 
   {
     name: "Montréal-Est / Anjou",
-    topGenre: "Rock",
-    genres: { "Rock": 32, "Pop": 26, "Hip-Hop": 20, "Electronic": 12, "Folk/World": 6, "Jazz/Blues": 4 },
-    description: "East-end industrial boroughs — rock, pop and classic R&B.",
-    venues: ["Cabaret Lion d'Or", "Centre culturel Anjou"],
     center: [45.6057, -73.5535],
     polygon: [
       [45.63421,-73.56834],[45.61546,-73.59601],[45.61403,-73.5986],[45.6126,-73.60232],
@@ -73,10 +67,6 @@ const neighbourhoods = [
 
   {
     name: "Saint-Léonard",
-    topGenre: "Hip-Hop",
-    genres: { "Hip-Hop": 36, "Pop": 26, "Electronic": 18, "Rock": 10, "Folk/World": 6, "Jazz/Blues": 4 },
-    description: "Diverse northeast — Latin, Caribbean & hip-hop dominate the airwaves.",
-    venues: ["Maison de la culture Saint-Léonard"],
     center: [45.5874, -73.5849],
     polygon: [
       [45.58144,-73.5685],[45.58189,-73.56804],[45.58203,-73.56699],[45.58248,-73.56674],
@@ -95,10 +85,6 @@ const neighbourhoods = [
 
   {
     name: "Montréal-Nord",
-    topGenre: "Hip-Hop",
-    genres: { "Hip-Hop": 40, "Pop": 22, "Electronic": 18, "Rock": 10, "Folk/World": 6, "Jazz/Blues": 4 },
-    description: "Dense north borough — strong Caribbean, African & hip-hop scene.",
-    venues: ["Maison de la culture Montréal-Nord"],
     center: [45.6013, -73.6282],
     polygon: [
       [45.61113,-73.60314],[45.61197,-73.60166],[45.63368,-73.62464],[45.6286,-73.63043],
@@ -114,10 +100,6 @@ const neighbourhoods = [
   // ── NORTH ISLAND ─────────────────────────────
   {
     name: "Ahuntsic-Cartierville",
-    topGenre: "Hip-Hop",
-    genres: { "Hip-Hop": 30, "Pop": 25, "Folk/World": 18, "Rock": 14, "Electronic": 8, "Jazz/Blues": 5 },
-    description: "Northern borough with strong Haitian & North African music scenes.",
-    venues: ["Maison de la culture Ahuntsic", "Café Cléopâtre"],
     center: [45.5517, -73.6857],
     polygon: [
       [45.58363,-73.6543],[45.58157,-73.65552],[45.58093,-73.6571],[45.58013,-73.65815],
@@ -156,10 +138,6 @@ const neighbourhoods = [
   // ── CENTRAL-NORTH ─────────────────────────────
   {
     name: "Villeray–Saint-Michel–Parc-Extension",
-    topGenre: "Hip-Hop",
-    genres: { "Hip-Hop": 34, "Electronic": 22, "Folk/World": 20, "Pop": 14, "Indie/Alt": 6, "Rock": 4 },
-    description: "Super-diverse borough — Bengali, Haitian, Moroccan & hip-hop sounds.",
-    venues: ["Café Cleopatra", "Maison de la culture Villeray"],
     center: [45.5524, -73.6206],
     polygon: [
       [45.52365,-73.62078],[45.52751,-73.61753],[45.52768,-73.61707],[45.5286,-73.61692],
@@ -177,10 +155,6 @@ const neighbourhoods = [
 
   {
     name: "Rosemont–La Petite-Patrie",
-    topGenre: "Hip-Hop",
-    genres: { "Hip-Hop": 32, "Electronic": 26, "Indie/Alt": 18, "Pop": 14, "Rock": 6, "Folk/World": 4 },
-    description: "Young & multicultural — hip-hop beats and electronic nights.",
-    venues: ["Théâtre Fairmount", "Quai des Brumes", "Le Ministère"],
     center: [45.5536, -73.5864],
     polygon: [
       [45.58144,-73.5685],[45.58166,-73.5696],[45.58121,-73.56986],[45.58147,-73.57065],
@@ -199,10 +173,6 @@ const neighbourhoods = [
   // ── CENTRAL ───────────────────────────────────
   {
     name: "Outremont",
-    topGenre: "Classical",
-    genres: { "Classical": 40, "Jazz/Blues": 25, "Folk/World": 18, "Indie/Alt": 10, "Pop": 5, "Rock": 2 },
-    description: "Affluent & cultured — classical concerts, opera & world music.",
-    venues: ["Outremont Theatre", "Rialto Theatre", "Église Saint-Viateur"],
     center: [45.5109, -73.6057],
     polygon: [
       [45.51578,-73.59027],[45.52778,-73.61728],[45.51966,-73.6244],[45.51656,-73.62667],
@@ -217,10 +187,6 @@ const neighbourhoods = [
 
   {
     name: "Le Plateau-Mont-Royal",
-    topGenre: "Indie/Alt",
-    genres: { "Indie/Alt": 38, "Folk/World": 22, "Jazz/Blues": 18, "Hip-Hop": 10, "Pop": 8, "Electronic": 4 },
-    description: "Bohemian heart of MTL — indie, folk & jazz cafés everywhere.",
-    venues: ["Casa del Popolo", "Sala Rossa", "L'Escogriffe"],
     center: [45.5254, -73.5829],
     polygon: [
       [45.51578,-73.59027],[45.51679,-73.58937],[45.51164,-73.57814],[45.5082,-73.58014],
@@ -234,10 +200,6 @@ const neighbourhoods = [
   // ── WEST-CENTRAL ──────────────────────────────
   {
     name: "Saint-Laurent",
-    topGenre: "Electronic",
-    genres: { "Electronic": 34, "Hip-Hop": 28, "Pop": 18, "Rock": 10, "Folk/World": 6, "Indie/Alt": 4 },
-    description: "Industrial turned creative — electronic & hip-hop thrive here.",
-    venues: ["Club Soda", "L'Astral", "Studio TD"],
     center: [45.5005, -73.7343],
     polygon: [
       [45.46318,-73.68281],[45.48369,-73.67721],[45.48946,-73.68584],[45.49126,-73.68119],
@@ -261,10 +223,6 @@ const neighbourhoods = [
 
   {
     name: "Mont-Royal (TMR)",
-    topGenre: "Classical",
-    genres: { "Classical": 36, "Jazz/Blues": 24, "Folk/World": 18, "Indie/Alt": 12, "Pop": 6, "Rock": 4 },
-    description: "Affluent enclave — classical concerts, opera & refined jazz.",
-    venues: ["Salle Marguerite-Bourgeoys", "Maison de la culture TMR"],
     center: [45.5047, -73.6523],
     polygon: [
       [45.48369,-73.67721],[45.49127,-73.67513],[45.48681,-73.66804],[45.48676,-73.66586],
@@ -282,10 +240,6 @@ const neighbourhoods = [
   // ── DOWNTOWN CORE ─────────────────────────────
   {
     name: "Côte-des-Neiges–NDG",
-    topGenre: "Folk/World",
-    genres: { "Folk/World": 30, "Classical": 22, "Rock": 18, "Jazz/Blues": 16, "Indie/Alt": 10, "Pop": 4 },
-    description: "Most diverse borough — world music from every continent.",
-    venues: ["Théâtre Déjà Vu", "The Burgundy Lion", "Café Resonance"],
     center: [45.4885, -73.6323],
     polygon: [
       [45.47935,-73.63082],[45.47897,-73.63117],[45.47837,-73.62992],[45.47697,-73.63567],
@@ -318,10 +272,6 @@ const neighbourhoods = [
 
   {
     name: "Ville-Marie (Downtown)",
-    topGenre: "Pop",
-    genres: { "Pop": 30, "Electronic": 25, "Hip-Hop": 20, "Rock": 12, "Jazz/Blues": 8, "Classical": 5 },
-    description: "High-traffic commercial core — mainstream pop & club sounds dominate.",
-    venues: ["Bell Centre", "Place des Arts", "Théâtre du Nouveau Monde"],
     center: [45.508, -73.5699],
     polygon: [
       [45.49633,-73.51958],[45.49924,-73.52048],[45.49933,-73.51991],[45.53257,-73.53023],
@@ -343,10 +293,6 @@ const neighbourhoods = [
 
   {
     name: "Mercier–Hochelaga-Maisonneuve",
-    topGenre: "Rock",
-    genres: { "Rock": 35, "Hip-Hop": 28, "Electronic": 18, "Indie/Alt": 12, "Pop": 5, "Folk/World": 2 },
-    description: "Gritty & authentic — rock venues, underground hip-hop & punk.",
-    venues: ["Théâtre Corona", "O Patro Vys", "La Tulipe"],
     center: [45.5829, -73.5373],
     polygon: [
       [45.58144,-73.5685],[45.57821,-73.55873],[45.57571,-73.55571],[45.57346,-73.54899],
@@ -380,10 +326,6 @@ const neighbourhoods = [
   // ── SOUTH & SOUTHWEST ─────────────────────────
   {
     name: "Le Sud-Ouest",
-    topGenre: "Indie/Alt",
-    genres: { "Indie/Alt": 28, "Electronic": 26, "Rock": 20, "Hip-Hop": 14, "Jazz/Blues": 8, "Pop": 4 },
-    description: "Griffintown & Pointe-St-Charles — rapidly gentrifying, indie & electronic.",
-    venues: ["Théâtre Corona", "Foufounes Électriques", "Astral"],
     center: [45.4694, -73.5813],
     polygon: [
       [45.48674,-73.58154],[45.48557,-73.58061],[45.48225,-73.58512],[45.48256,-73.58577],
@@ -408,10 +350,6 @@ const neighbourhoods = [
 
   {
     name: "Verdun",
-    topGenre: "Rock",
-    genres: { "Rock": 36, "Folk/World": 22, "Indie/Alt": 18, "Hip-Hop": 12, "Electronic": 8, "Pop": 4 },
-    description: "Riverside community — indie rock & folk, growing arts scene.",
-    venues: ["Théâtre Verre Bouteille", "Wellington St strip"],
     center: [45.4606, -73.5591],
     polygon: [
       [45.42805,-73.5398],[45.43315,-73.53347],[45.43715,-73.5297],[45.44229,-73.52603],
@@ -429,10 +367,6 @@ const neighbourhoods = [
 
   {
     name: "LaSalle",
-    topGenre: "Rock",
-    genres: { "Rock": 30, "Pop": 26, "Folk/World": 20, "Electronic": 12, "Hip-Hop": 8, "Jazz/Blues": 4 },
-    description: "Canal-side borough — roots music, folk festivals and riverside rock.",
-    venues: ["Maison de la culture LaSalle", "Canal events"],
     center: [45.4291, -73.617],
     polygon: [
       [45.4218,-73.6661],[45.41788,-73.65539],[45.41329,-73.64826],[45.41093,-73.64359],
@@ -449,10 +383,6 @@ const neighbourhoods = [
 
   {
     name: "Lachine",
-    topGenre: "Folk/World",
-    genres: { "Folk/World": 28, "Rock": 26, "Pop": 20, "Electronic": 14, "Hip-Hop": 8, "Jazz/Blues": 4 },
-    description: "Canal-side borough — roots music and folk festivals by the water.",
-    venues: ["Maison de la culture Lachine", "Canal Lachine events"],
     center: [45.4464, -73.6803],
     polygon: [
       [45.4218,-73.6661],[45.43219,-73.66586],[45.43343,-73.66218],[45.43698,-73.65405],
@@ -471,10 +401,6 @@ const neighbourhoods = [
   // ── WEST ISLAND ───────────────────────────────
   {
     name: "Côte-Saint-Luc / Hampstead / Montréal-Ouest",
-    topGenre: "Classical",
-    genres: { "Classical": 28, "Jazz/Blues": 26, "Pop": 22, "Folk/World": 14, "Rock": 6, "Electronic": 4 },
-    description: "Established anglophone/Jewish community — jazz clubs and classical music.",
-    venues: ["Salle Claude-Champagne", "Cummings Jewish Centre"],
     center: [45.464, -73.6662],
     polygon: [
       [45.46318,-73.68281],[45.46215,-73.68129],[45.46136,-73.68183],[45.46101,-73.6828],
@@ -492,10 +418,6 @@ const neighbourhoods = [
 
   {
     name: "Pierrefonds-Roxboro / L'Île-Bizard",
-    topGenre: "Pop",
-    genres: { "Pop": 32, "Rock": 26, "Classical": 16, "Electronic": 12, "Folk/World": 8, "Hip-Hop": 6 },
-    description: "Far west suburban borough — pop and classic rock dominate.",
-    venues: ["Maison de la culture Pierrefonds"],
     center: [45.4873, -73.848],
     polygon: [
       [45.44678,-73.90435],[45.4475,-73.90234],[45.44635,-73.90147],[45.44671,-73.90013],
@@ -537,6 +459,72 @@ const neighbourhoods = [
     ]
   }
 ];
+
+// Neighborhood stats
+function updateNeighborhoodsStats() {
+	for (const neighbourhood of neighbourhoods) {
+		const matchingEvents = [];
+		for (const event of events) {
+			const lat = Number(event.lat);
+			const lng = Number(event.lng);
+			if (Number.isNaN(lat) || Number.isNaN(lng)) {
+				continue;
+			}
+			const isInside = pointInPolygon(
+				[lat, lng],
+				neighbourhood.polygon
+			);
+			if (isInside) {
+				matchingEvents.push(event);
+			}
+		}
+
+		const genreCounts = {};
+		for (const event of matchingEvents) {
+			const genre = event.genre || "Unknown";
+			genreCounts[genre] = (genreCounts[genre] || 0) + 1;
+		}
+
+		const total = matchingEvents.length;
+		const genres = {};
+		for (const [genre, count] of Object.entries(genreCounts)) {
+			genres[genre] = total > 0
+				? Math.round((count / total) * 100)
+				: 0;
+		}
+
+		const topGenre = Object.entries(genreCounts)
+			.sort((a, b) => b[1] - a[1])[0]?.[0] || "No events";
+		neighbourhood.events = matchingEvents;
+		neighbourhood.totalEvents = total;
+		neighbourhood.genres = genres;
+		neighbourhood.topGenre = topGenre;
+	}
+}
+
+function pointInPolygon(point, polygon) {
+	const lat = point[0];
+	const lng = point[1];
+
+	let inside = false;
+
+	for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+		const latI = polygon[i][0];
+		const lngI = polygon[i][1];
+		const latJ = polygon[j][0];
+		const lngJ = polygon[j][1];
+
+		const intersect =
+			(lngI > lng) !== (lngJ > lng) &&
+			lat < ((latJ - latI) * (lng - lngI)) / (lngJ - lngI) + latI;
+
+		if (intersect) {
+			inside = !inside;
+		}
+	}
+
+	return inside;
+}
 
 // ─────────────────────────────────────────────
 //  Map Setup
@@ -582,17 +570,13 @@ function drawNeighbourhoodZones() {
           <span class="genre-pct">${pct}%</span>
         </div>`).join("");
 
-    const venueList = n.venues.map(v => `<span class="venue-tag">${v}</span>`).join("");
-
     poly.bindPopup(`
       <div class="zone-popup">
         <div class="zone-header" style="border-left:4px solid ${color}">
           <strong>${n.name}</strong>
           <span class="top-badge" style="background:${color}">${n.topGenre}</span>
         </div>
-        <p class="zone-desc">${n.description}</p>
         <div class="genre-chart">${genreRows}</div>
-        <div class="venue-list"><strong>🎤 Venues:</strong><br>${venueList}</div>
       </div>
     `, { maxWidth: 320 });
 
@@ -638,8 +622,6 @@ function showNeighbourhoodDetail(n) {
         <span class="detail-pct">${pct}%</span>
       </div>`).join("");
 
-  const venueItems = n.venues.map(v => `<li>${v}</li>`).join("");
-
   panel.innerHTML = `
     <div class="detail-header" style="background:${color}18;border-left:4px solid ${color}">
       <div>
@@ -648,14 +630,9 @@ function showNeighbourhoodDetail(n) {
       </div>
       <button class="close-detail" onclick="closeDetail()">✕</button>
     </div>
-    <p class="detail-desc">${n.description}</p>
     <div class="detail-section">
       <div class="section-title">Music Taste Breakdown</div>
       ${genreRows}
-    </div>
-    <div class="detail-section">
-      <div class="section-title">🎤 Where to Perform</div>
-      <ul class="venue-list-ul">${venueItems}</ul>
     </div>
     <button class="perform-here-btn" style="background:${color}" onclick="filterEventsByArea('${n.name}')">
       🎸 Find Events Here
@@ -728,26 +705,28 @@ function renderLegend() {
 // ─────────────────────────────────────────────
 //  Events
 // ─────────────────────────────────────────────
-let events = [
-  {
-    id: 1, artistName: "Alex Guitar", genre: "Jazz/Blues",
-    locationName: "Place des Arts", time: "Today 6 PM",
-    liveLink: "https://youtube.com", lat: 45.5088, lng: -73.5662,
-    interested: 24, neighbourhood: "Ville-Marie (Downtown)"
-  },
-  {
-    id: 2, artistName: "Street Theatre Crew", genre: "Folk/World",
-    locationName: "Old Port", time: "Today 7 PM",
-    liveLink: "https://twitch.tv", lat: 45.5075, lng: -73.5530,
-    interested: 15, neighbourhood: "Ville-Marie (Downtown)"
-  },
-  {
-    id: 3, artistName: "Club Nuit MTL", genre: "Electronic",
-    locationName: "Saint-Laurent Blvd", time: "Tonight 10 PM",
-    liveLink: "https://twitch.tv", lat: 45.5130, lng: -73.6550,
-    interested: 41, neighbourhood: "Saint-Laurent (borough)"
-  }
-];
+let events = [];
+
+async function loadEvents() {
+	try {
+		const response = await fetch("http://localhost:999/server/events");
+
+		if (!response.ok) {
+			throw new Error("Could not fetch events");
+		}
+
+		events = await response.json();
+
+		console.log("Events loaded:");
+		console.log(events);
+
+		renderEvents();
+	} catch (err) {
+		console.error("Could not load events:", err.message);
+		events = [];
+		renderEvents();
+	}
+}
 
 let eventMarkers = [];
 let activeFilter = null;
@@ -835,15 +814,14 @@ function addInterest(eventId) {
 // ─────────────────────────────────────────────
 //  Create Event — geocodes via Nominatim
 // ─────────────────────────────────────────────
-async function createEvent() {
+async function addEvent() {
   const artistName   = document.getElementById("artistName").value.trim();
   const genre        = document.getElementById("genre").value.trim();
   const locationName = document.getElementById("locationName").value.trim();
-  const time         = document.getElementById("time").value.trim();
+  const timeInput    = document.getElementById("time").value;
   const liveLink     = document.getElementById("liveLink").value.trim();
-  const hood         = document.getElementById("neighbourhoodSelect").value;
 
-  if (!artistName || !genre || !locationName || !time || !hood) {
+  if (!locationName || !timeInput) {
     showFormError("Please fill in all required fields ★");
     return;
   }
@@ -860,31 +838,43 @@ async function createEvent() {
       { headers: { "Accept-Language": "en" } }
     );
     const data = await res.json();
-    if (data && data.length > 0) {
-      lat = parseFloat(data[0].lat);
-      lng = parseFloat(data[0].lon);
-    } else {
-      const n = neighbourhoods.find(x => x.name === hood);
-      const j = () => (Math.random() - 0.5) * 0.010;
-      lat = (n ? n.center[0] : 45.5017) + j();
-      lng = (n ? n.center[1] : -73.5673) + j();
-    }
+	if (data && data.length > 0) {
+		lat = parseFloat(data[0].lat);
+		lng = parseFloat(data[0].lon);
+	} else {
+		lat = 45.5017;
+		lng = -73.5673;
+	}
   } catch {
     const n = neighbourhoods.find(x => x.name === hood);
     const j = () => (Math.random() - 0.5) * 0.010;
     lat = (n ? n.center[0] : 45.5017) + j();
     lng = (n ? n.center[1] : -73.5673) + j();
   }
+  
+  const time = Math.floor(new Date(timeInput).getTime() / 1000);
 
-  events.push({
-    id: Date.now(), artistName, genre, locationName, time,
-    liveLink: liveLink || "#", lat, lng, interested: 0, neighbourhood: hood
+  const event = await addEventServer({
+    artistName,
+	genre,
+	locationName,
+	time,
+	lat,
+	lng,
   });
+  
+  if (event != null) {
+	events.push(event);
+	updateNeighborhoodsStats();
+	renderEvents();
+	renderNeighbourhoodList();
+	drawNeighbourhoodZones();
+  }
+	  
 
   ["artistName","genre","locationName","time","liveLink"].forEach(id => {
     document.getElementById(id).value = "";
   });
-  document.getElementById("neighbourhoodSelect").value = "";
 
   renderEvents(activeFilter);
   map.flyTo([lat, lng], 15, { duration: 1.2 });
@@ -896,6 +886,47 @@ async function createEvent() {
     btn.style.background = "";
     btn.disabled = false;
   }, 2500);
+}
+
+async function addEventServer(eventData) {
+	try {
+		const formData = new FormData();
+
+		formData.append("artistName", eventData.artistName);
+		formData.append("genre", eventData.genre);
+		formData.append("locationName", eventData.locationName);
+		formData.append("lat", String(eventData.lat));
+		formData.append("lng", String(eventData.lng));
+
+		if (eventData.tags) {
+			formData.append("tags", JSON.stringify(eventData.tags));
+		}
+
+		if (eventData.imageFile) {
+			formData.append("image", eventData.imageFile);
+		}
+
+		const response = await fetch(`${DOMAIN_URL}/server/addevent`, {
+			method: "POST",
+			body: formData
+		});
+
+		const data = await response.json();
+
+		if (!response.ok) {
+			console.log("Create event failed:");
+			console.log(data);
+			return null;
+		}
+
+		console.log("Event created successfully:");
+		console.log(data);
+		
+		return data.event;
+	} catch (err) {
+		console.error("Could not create event:", err);
+		return null;
+	}
 }
 
 function showFormError(msg) {
@@ -928,27 +959,27 @@ function filterByGenre(genre, btn) {
   });
 }
 
-// ─────────────────────────────────────────────
-//  Neighbourhood Select
-// ─────────────────────────────────────────────
-function populateNeighbourhoodSelect() {
-  const sel = document.getElementById("neighbourhoodSelect");
-  sel.innerHTML = `<option value="">Select neighbourhood…</option>` +
-    neighbourhoods.map(n =>
-      `<option value="${n.name}">${n.name} (${n.topGenre})</option>`
+// Genre select
+function populateGenreSelect() {
+  const sel = document.getElementById("genre");
+  sel.innerHTML = `<option value="">Any Genre</option>` +
+    Object.keys(genreColors).map(genre =>
+      `<option value="${genre}">${genre}</option>`
     ).join("");
 }
 
 // ─────────────────────────────────────────────
 //  Init
 // ─────────────────────────────────────────────
-function init() {
+async function init() {
+  await loadEvents();
+  updateNeighborhoodsStats();	
   drawNeighbourhoodZones();
   renderNeighbourhoodList();
   renderLegend();
   renderEvents();
   renderGenreTabs();
-  populateNeighbourhoodSelect();
+  populateGenreSelect();
 }
 
 init();

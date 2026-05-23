@@ -49,13 +49,12 @@
       <div class="panel create-panel">
         <div class="panel-title">🎤 Create Performance</div>
         <div id="formError" class="form-error"></div>
-        <input id="artistName" type="text" placeholder="Artist name *" />
-        <input id="genre" type="text" placeholder="Genre: Jazz/Blues, Hip-Hop, Rock…" />
-        <select id="neighbourhoodSelect"></select>
-        <input id="locationName" type="text" placeholder="Venue / street name (geocoded) *" />
-        <input id="time" type="text" placeholder="Time: Today 6 PM *" />
+        <input id="artistName" type="text" placeholder="Artist name" />
+        <select id="genre"></select>
+        <input id="locationName" type="text" placeholder="Location *" />
+        <input id="time" type="datetime-local" required />
         <input id="liveLink" type="text" placeholder="Livestream link (optional)" />
-        <button class="create-btn" onclick="createEvent()">Create Event</button>
+        <button class="create-btn" onclick="addEvent()">Create Event</button>
         <p class="hint">The venue name is geocoded — enter a real Montreal address or place name for an exact pin.</p>
       </div>
 
