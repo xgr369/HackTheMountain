@@ -80,10 +80,11 @@ async function readAllEvents() {
 	}
 }
 
-// GET one event by key
-// Example: /server/getevent?key=Montreal_2026-05-23T18-00-00-000Z_abcd1234
-app.get("/server/getevent", async (req, res) => {
-	const { key } = req.query;
+// GET one event
+// Example: /server/getevent/120391-2309102-312
+// Returns 404 for key not found
+app.get("/server/getevent/:key", async (req, res) => {
+	const key = req.params.key;
 
 	if (!key) {
 		return res.status(400).json({
@@ -102,9 +103,7 @@ app.get("/server/getevent", async (req, res) => {
 	res.json(data);
 });
 
-// GET upcoming events
-// Note - this will be soon updated
-// Example: /server/events
+// GET today's events, with respective keys
 app.get("/server/events", async (req, res) => {
 	const events = await readAllEvents();
 
@@ -171,6 +170,51 @@ app.post("/server/addevent", async (req, res) => {
 			message: "Could not add event",
 			key,
 			event: json
+		});
+	}
+});
+
+// POST edit event (non-essential fields only)
+//  {
+//   "artistName": "DJ Mike",
+//   "genre": "Hip-Hop",
+//   "locationName": "Downtown Montreal",
+//   "tags": ["rap", "live"],
+//   "media": ["new-image.jpg"]
+// }
+app.post("/server/editevent/:key", async (req, res) => {
+	const key = req.params.key;
+	const body = req.body;
+
+	try {
+		const oldEvent = await readEvent(key);
+
+		const updatedEvent = {
+			...oldEvent,
+
+			// editable fields only
+			artistName: body.artistName ?? oldEvent.artistName,
+			genre: body.genre ?? oldEvent.genre,
+			locationName: body.locationName ?? oldEvent.locationName,
+			tags: body.tags ?? oldEvent.tags,
+			media: body.media ?? oldEvent.media,
+
+			// locked essential fields
+			lat: oldEvent.lat,
+			lng: oldEvent.lng,
+			time: oldEvent.time,
+		};
+
+		await writeEvent(key, updatedEvent);
+
+		res.json({
+			message: "Event updated successfully",
+			key,
+			event: updatedEvent
+		});
+	} catch (err) {
+		res.status(404).json({
+			error: "Event not found or could not be updated"
 		});
 	}
 });
