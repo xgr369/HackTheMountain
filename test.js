@@ -7,13 +7,13 @@ async function testAddEvent() {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({
-                    artist: "The Weeknd",
-                    date: "2026-06-01T20:00:00",
-                    location: "Montreal",
-                    tags: ["pop", "concert"],
-                    media: "weeknd.jpg"
-                })
+                body: JSON.stringify( {
+					"artistName": "Bob",
+					"genre": "Reggae",
+					"locationName": "Old Port",
+					"lat": -127,
+					"lng": 128,
+				})
             }
         );
 
