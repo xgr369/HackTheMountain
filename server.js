@@ -2,7 +2,7 @@
 PLAN:
  - Backend entry point.
  - Receives event requests.
- - Saves events into local JSON files.
+ - Saves events into local files.
  - Can fetch one event or list upcoming events.
 */
 
@@ -22,18 +22,17 @@ app.use(express.json());
 const EVENTS_DIR = path.join(__dirname, "storage", "events");
 
 function getKey(json) {
-	if (!json.location || !json.timestamp) {
+	if (!json.lat || !json.lng || !json.timestamp) {
 		throw new Error("invalid fields");
 	}
 
-	const location = String(json.location).replace(/\s+/g, "_");
 	const timestamp = new Date(json.timestamp)
 		.toISOString()
 		.replace(/[:.]/g, "-");
 
 	const unique = crypto.randomUUID().slice(0, 8);
 
-	return `${location}_${timestamp}_${unique}`;
+	return `${json.lat}_${json.lng}_${timestamp}_${unique}`;
 }
 
 async function readEvent(key) {
@@ -125,27 +124,31 @@ app.get("/server/events", async (req, res) => {
 // Example body:
 // {
 //   "artist": "Bob",
-//   "date": "2026-05-25T19:00:00",
-//   "location": "Montreal",
+//   "timestamp": "2026-05-25T19:00:00",
+//   "lat":
+//	 "lng":
+//   "location": "Old Port",
 //   "tags": ["music", "street"],
 //   "media": "image.jpg"
 // }
 app.post("/server/addevent", async (req, res) => {
 	const body = req.body;
 
-	if (!body || !body.location || !body.date) {
+	if (!body || !body.lag || !body.lng || !body.timestamp) {
 		return res.status(400).json({
-			error: "Missing required fields: location and date"
+			error: "Missing required fields: lat, lng or timestamp"
 		});
 	}
 
-	const { artist, date, location, tags, media } = body;
+	const { artist, timestamp, location, tags, media } = body;
 
 	const json = {
 		artist: artist || "Unknown artist",
+		lat,
+		lng,
 		location,
 		tags: tags || [],
-		timestamp: date,
+		timestamp: timestamp,
 		media: media || null
 	};
 	
