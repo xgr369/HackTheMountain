@@ -1,0 +1,181 @@
+/*
+PLAN:
+ - Backend entry point.
+ - Receives event requests.
+ - Saves events into local JSON files.
+ - Can fetch one event or list upcoming events.
+*/
+
+require("dotenv").config();
+
+const cors = require("cors");
+const express = require("express");
+const fs = require("fs/promises");
+const path = require("path");
+const crypto = require("crypto");
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+const EVENTS_DIR = path.join(__dirname, "storage", "events");
+
+function getKey(json) {
+	if (!json.location || !json.timestamp) {
+		throw new Error("invalid fields");
+	}
+
+	const location = String(json.location).replace(/\s+/g, "_");
+	const timestamp = new Date(json.timestamp)
+		.toISOString()
+		.replace(/[:.]/g, "-");
+
+	const unique = crypto.randomUUID().slice(0, 8);
+
+	return `${location}_${timestamp}_${unique}`;
+}
+
+async function readEvent(key) {
+	try {
+		console.log(`CALL readEvent ${key}`);
+
+		const filePath = path.join(EVENTS_DIR, key);
+		const data = await fs.readFile(filePath, "utf8");
+
+		return JSON.parse(data);
+	} catch (err) {
+		console.error("Event not found:", err.message);
+		return null;
+	}
+}
+
+async function writeEvent(key, json) {
+	await fs.mkdir(EVENTS_DIR, { recursive: true });
+
+	const filePath = path.join(EVENTS_DIR, key);
+
+	await fs.writeFile(filePath, JSON.stringify(json, null, 2), "utf8");
+
+	console.log(`CALL writeEvent ${key}`);
+}
+
+async function readAllEvents() {
+	try {
+		await fs.mkdir(EVENTS_DIR, { recursive: true });
+
+		const files = await fs.readdir(EVENTS_DIR);
+		const events = [];
+
+		for (const file of files) {
+			const event = await readEvent(file);
+
+			if (event) {
+				events.push({
+					key: file,
+					...event
+				});
+			}
+		}
+
+		return events;
+	} catch (err) {
+		console.error(err);
+		return [];
+	}
+}
+
+// GET one event by key
+// Example: /server/getevent?key=Montreal_2026-05-23T18-00-00-000Z_abcd1234
+app.get("/server/getevent", async (req, res) => {
+	const { key } = req.query;
+
+	if (!key) {
+		return res.status(400).json({
+			error: "Missing event key"
+		});
+	}
+
+	const data = await readEvent(key);
+
+	if (!data) {
+		return res.status(404).json({
+			error: "Event not found"
+		});
+	}
+
+	res.json(data);
+});
+
+// GET upcoming events
+// Note - this will be soon updated
+// Example: /server/events
+app.get("/server/events", async (req, res) => {
+	const events = await readAllEvents();
+	const now = new Date();
+
+	const upcomingEvents = events
+		.filter(event => new Date(event.timestamp) >= now)
+		.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+	res.json(upcomingEvents);
+});
+
+// POST add event
+// Example body:
+// {
+//   "artist": "Bob",
+//   "date": "2026-05-25T19:00:00",
+//   "location": "Montreal",
+//   "tags": ["music", "street"],
+//   "media": "image.jpg"
+// }
+app.post("/server/addevent", async (req, res) => {
+	const body = req.body;
+
+	if (!body || !body.location || !body.date) {
+		return res.status(400).json({
+			error: "Missing required fields: location and date"
+		});
+	}
+
+	const { artist, date, location, tags, media } = body;
+
+	const json = {
+		artist: artist || "Unknown artist",
+		location,
+		tags: tags || [],
+		timestamp: date,
+		media: media || null
+	};
+	
+	try {
+		const key = getKey(json);
+		
+		await writeEvent(key, json);
+
+		console.log("POST addevent");
+
+		res.status(201).json({
+			message: "Event added successfully",
+			key,
+			event: json
+		});
+	} catch (err) {
+		res.status(400).json({
+			message: "Could not add event",
+			key,
+			event: json
+		});
+	}
+});
+
+function main() {
+	const PORT = process.env.PORT || 3000;
+
+	app.listen(PORT, () => {
+		console.log(`Server running on port ${PORT}`);
+	});
+}
+
+main();
