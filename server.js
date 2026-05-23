@@ -22,15 +22,13 @@ app.use(express.json());
 const EVENTS_DIR = path.join(__dirname, "storage", "events");
 
 function getKey(json) {
-	if (json.lat === undefined || json.lng === undefined) {
+	if (json.lat === undefined || json.lng === undefined || json.time === undefined) {
 		throw new Error("invalid fields");
 	}
 
-	const time = Math.floor(Date.now() / 1000);
-
 	const unique = crypto.randomUUID().slice(0, 8);
 
-	return `${json.lat}_${json.lng}_${time}_${unique}`;
+	return `${json.lat}_${json.lng}_${json.time}_${unique}`;
 }
 
 async function readEvent(key) {
@@ -109,10 +107,14 @@ app.get("/server/getevent", async (req, res) => {
 // Example: /server/events
 app.get("/server/events", async (req, res) => {
 	const events = await readAllEvents();
-	const now = Math.floor(Date.now() / 1000);
+
+	const today = new Date();
+	today.setHours(0, 0, 0, 0);
+
+	const todayUnix = Math.floor(today.getTime() / 1000);
 
 	const upcomingEvents = events
-		.filter(event => event.time >= now)
+		.filter(event => event.time >= todayUnix)
 		.sort((a, b) => a.time - b.time);
 
 	res.json(upcomingEvents);
@@ -126,6 +128,7 @@ app.get("/server/events", async (req, res) => {
 //   "locationName": "Old Port",
 //   "lat": -127
 //	 "lng": 128
+//	 "time"
 //   "tags": ["music", "street"],
 //   "media": ["image.jpg"]
 // }
@@ -146,6 +149,7 @@ app.post("/server/addevent", async (req, res) => {
 		locationName: locationName,
 		lat: lat,
 		lng: lng,
+	    time: Math.floor(Date.now() / 1000),
 		tags: tags || [],
 		media: media || [],
 	};
@@ -172,7 +176,7 @@ app.post("/server/addevent", async (req, res) => {
 });
 
 function main() {
-	const PORT = process.env.PORT || 3000;
+	const PORT = 999;
 
 	app.listen(PORT, () => {
 		console.log(`Server running on port ${PORT}`);
