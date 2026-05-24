@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Shake Sensor</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0f;
+    --panel: #12121a;
+    --border: #1e1e2e;
+    --green: #00ff88;
+    --cyan: #00cfff;
+    --red: #ff3366;
+    --yellow: #ffcc00;
+    --text: #c8d0e0;
+    --dim: #4a5060;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px;
+    gap: 12px;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 2px,
+      rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px
+    );
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2rem, 8vw, 3.2rem);
+    letter-spacing: 0.12em;
+    background: linear-gradient(135deg, var(--cyan), var(--green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    margin-top: 4px;
+  }
+
+  .subtitle {
+    font-size: 0.65rem;
+    color: var(--dim);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    text-align: center;
+    margin-top: -8px;
+  }
+
+  #permBtn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    border: 1.5px solid var(--cyan);
+    color: var(--cyan);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    padding: 12px 28px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background 0.2s, box-shadow 0.2s;
+    box-shadow: 0 0 16px rgba(0,207,255,0.15);
+  }
+  #permBtn:hover { background: rgba(0,207,255,0.08); box-shadow: 0 0 28px rgba(0,207,255,0.3); }
+  #permBtn.hidden { display: none; }
+
+  #status {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    padding: 4px 14px;
+    border: 1px solid var(--dim);
+    color: var(--dim);
+    text-transform: uppercase;
+    transition: all 0.3s;
+  }
+  #status.active { color: var(--green); border-color: var(--green); box-shadow: 0 0 12px rgba(0,255,136,0.2); }
+  #status.denied { color: var(--red); border-color: var(--red); }
+
+  /* ── Orb area: canvas behind, orb on top ── */
+  .orb-wrap {
+    position: relative;
+    width: min(260px, 68vw);
+    height: min(260px, 68vw);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #orbCanvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+  }
+
+  .orb {
+    width: 54%;
+    height: 54%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, rgba(0,207,255,0.3), rgba(0,255,136,0.06) 60%, transparent);
+    border: 1.5px solid rgba(0,207,255,0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+    transition: box-shadow 0.15s, border-color 0.15s;
+  }
+
+  .orb .big-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1.6rem, 8vw, 2.4rem);
+    line-height: 1;
+    color: var(--cyan);
+    transition: color 0.2s;
+  }
+  .orb .big-label {
+    font-size: 0.5rem;
+    color: var(--dim);
+    letter-spacing: 0.18em;
+    margin-top: 2px;
+  }
+
+  .orb.shake-low  { border-color: var(--yellow); box-shadow: 0 0 30px rgba(255,204,0,0.3); }
+  .orb.shake-med  { border-color: var(--cyan);   box-shadow: 0 0 40px rgba(0,207,255,0.5); }
+  .orb.shake-high { border-color: var(--red);    box-shadow: 0 0 55px rgba(255,51,102,0.6); }
+  .orb.shake-low  .big-num { color: var(--yellow); }
+  .orb.shake-med  .big-num { color: var(--cyan); }
+  .orb.shake-high .big-num { color: var(--red); }
+
+  /* ── Grid ── */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 12px 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    opacity: 0.4;
+  }
+  .panel.accent-green::before  { background: linear-gradient(90deg, transparent, var(--green), transparent); }
+  .panel.accent-red::before    { background: linear-gradient(90deg, transparent, var(--red), transparent); }
+  .panel.accent-yellow::before { background: linear-gradient(90deg, transparent, var(--yellow), transparent); }
+
+  .panel-label {
+    font-size: 0.58rem;
+    color: var(--dim);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .panel-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1.5rem, 6vw, 2rem);
+    color: var(--text);
+    line-height: 1;
+    transition: color 0.2s;
+  }
+  .panel-unit { font-size: 0.6rem; color: var(--dim); margin-top: 2px; }
+
+  .bar-track {
+    width: 100%; height: 4px;
+    background: var(--border);
+    margin-top: 8px; overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%; width: 0%;
+    background: var(--cyan);
+    transition: width 0.12s, background 0.2s;
+  }
+  .bar-fill.green  { background: var(--green); }
+  .bar-fill.yellow { background: var(--yellow); }
+  .bar-fill.red    { background: var(--red); }
+
+  /* ── Waveform ── */
+  .wave-panel {
+    width: 100%; max-width: 420px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 12px 14px;
+    position: relative;
+  }
+  .wave-panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--green), transparent);
+    opacity: 0.4;
+  }
+  .wave-panel .panel-label { margin-bottom: 8px; }
+  #waveCanvas { width: 100%; height: 70px; display: block; }
+
+  /* ── Log ── */
+  .log-panel {
+    width: 100%; max-width: 420px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 12px 14px;
+  }
+  .log-panel .panel-label { margin-bottom: 8px; }
+  #log {
+    display: flex; flex-direction: column;
+    gap: 4px; max-height: 110px; overflow-y: auto;
+  }
+  .log-entry {
+    font-size: 0.65rem; color: var(--dim);
+    border-left: 2px solid var(--border);
+    padding-left: 8px; transition: opacity 0.5s;
+  }
+  .log-entry.fresh { color: var(--green); border-color: var(--green); }
+  .log-entry .ts { color: var(--dim); margin-right: 8px; }
+
+  #flash {
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 998;
+    opacity: 0; transition: opacity 0.08s;
+  }
+  #flash.pop { opacity: 1; transition: none; }
+
+  @keyframes screenShake {
+    0%   { transform: translate(0,0) rotate(0deg); }
+    20%  { transform: translate(-4px,3px) rotate(-0.4deg); }
+    40%  { transform: translate(4px,-3px) rotate(0.4deg); }
+    60%  { transform: translate(-3px,2px) rotate(-0.2deg); }
+    80%  { transform: translate(3px,-1px) rotate(0.2deg); }
+    100% { transform: translate(0,0) rotate(0deg); }
+  }
+  body.shaking { animation: screenShake 0.3s ease; }
+</style>
+</head>
+<body>
+
+<h1>SHAKE SENSOR</h1>
+<p class="subtitle">Music Motion Visualiser</p>
+
+<button id="permBtn">⬡ Enable Motion Sensor</button>
+<div id="status">STANDBY</div>
+
+<div class="orb-wrap">
+  <canvas id="orbCanvas"></canvas>
+  <div class="orb" id="orb">
+    <span class="big-num" id="ampDisplay">0.0</span>
+    <span class="big-label">AMPLITUDE</span>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="panel accent-green">
+    <div class="panel-label">Frequency</div>
+    <div class="panel-value" id="freqVal">0.0</div>
+    <div class="panel-unit">Hz (shakes/sec)</div>
+    <div class="bar-track"><div class="bar-fill green" id="freqBar"></div></div>
+  </div>
+  <div class="panel accent-red">
+    <div class="panel-label">Peak Amp</div>
+    <div class="panel-value" id="peakVal">0.0</div>
+    <div class="panel-unit">m/s²</div>
+    <div class="bar-track"><div class="bar-fill red" id="peakBar"></div></div>
+  </div>
+  <div class="panel accent-yellow">
+    <div class="panel-label">Shake Count</div>
+    <div class="panel-value" id="countVal">0</div>
+    <div class="panel-unit">total events</div>
+  </div>
+  <div class="panel">
+    <div class="panel-label">Intensity</div>
+    <div class="panel-value" id="levelVal">—</div>
+    <div class="panel-unit">classification</div>
+    <div class="bar-track"><div class="bar-fill" id="levelBar"></div></div>
+  </div>
+</div>
+
+<div class="wave-panel">
+  <div class="panel-label">⬡ Acceleration Waveform</div>
+  <canvas id="waveCanvas" width="800" height="140"></canvas>
+</div>
+
+<div class="log-panel">
+  <div class="panel-label">⬡ Event Log</div>
+  <div id="log"><div class="log-entry"><span class="ts">--:--:--</span>Waiting for motion...</div></div>
+</div>
+
+<div id="flash"></div>
+
+<script>
+// ── Constants ──────────────────────────────────────────────────────────
+const SHAKE_THRESHOLD = 12;
+const COOLDOWN_MS     = 250;
+const MAX_AMP         = 60;
+const MAX_FREQ        = 8;
+const WAVE_LEN        = 120;
+// ── State ──────────────────────────────────────────────────────────────
+let lastX = 0, lastY = 0, lastZ = 0;
+let lastShakeTime = 0;
+let shakeCount = 0;
+let peakAmp = 0;
+const shakeTimestamps = [];
+const waveBuffer = new Array(WAVE_LEN).fill(0);
+
+let globalEnergy = 0;
+let hueShift     = 0;
+let wavePhase    = 0;
+
+// ── DOM ────────────────────────────────────────────────────────────────
+const permBtn    = document.getElementById('permBtn');
+const statusEl   = document.getElementById('status');
+const orb        = document.getElementById('orb');
+const ampDisplay = document.getElementById('ampDisplay');
+const freqBar    = document.getElementById('freqBar');
+const peakBar    = document.getElementById('peakBar');
+const levelBar   = document.getElementById('levelBar');
+const flash      = document.getElementById('flash');
+const logEl      = document.getElementById('log');
+
+// Orb canvas
+const oc  = document.getElementById('orbCanvas');
+const octx = oc.getContext('2d');
+
+// Waveform canvas
+const canvas = document.getElementById('waveCanvas');
+const ctx    = canvas.getContext('2d');
+
+// ── Resize orb canvas ─────────────────────────────────────────────────
+function resizeOrbCanvas() {
+  const wrap = oc.parentElement;
+  const size = wrap.offsetWidth;
+  oc.width  = size * devicePixelRatio;
+  oc.height = size * devicePixelRatio;
+  octx.scale(devicePixelRatio, devicePixelRatio);
+}
+resizeOrbCanvas();
+window.addEventListener('resize', resizeOrbCanvas);
+
+// ── Permission ────────────────────────────────────────────────────────
+permBtn.addEventListener('click', async () => {
+  if (typeof DeviceMotionEvent !== 'undefined' &&
+      typeof DeviceMotionEvent.requestPermission === 'function') {
+    try {
+      const res = await DeviceMotionEvent.requestPermission();
+      if (res === 'granted') startListening();
+      else setStatus('DENIED', 'denied');
+    } catch(e) { setStatus('ERROR', 'denied'); }
+  } else {
+    startListening();
+  }
+});
+
+if (typeof DeviceMotionEvent !== 'undefined' &&
+    typeof DeviceMotionEvent.requestPermission !== 'function') {
+  startListening();
+}
+
+function startListening() {
+  if (!window.DeviceMotionEvent) {
+    setStatus('NOT SUPPORTED', 'denied');
+    addLog('DeviceMotionEvent not available.', true);
+    return;
+  }
+  permBtn.classList.add('hidden');
+  setStatus('ACTIVE', 'active');
+  addLog('Motion sensor started — shake to the beat!');
+  window.addEventListener('devicemotion', onMotion, true);
+  requestAnimationFrame(loop);
+}
+
+function setStatus(txt, cls) {
+  statusEl.textContent = txt;
+  statusEl.className = cls || '';
+}
+
+// ── Motion handler ────────────────────────────────────────────────────
+function onMotion(e) {
+  const acc = e.accelerationIncludingGravity || e.acceleration;
+  if (!acc) return;
+  const x = acc.x ?? 0, y = acc.y ?? 0, z = acc.z ?? 0;
+
+  const dx = x - lastX, dy = y - lastY, dz = z - lastZ;
+  const delta = Math.sqrt(dx*dx + dy*dy + dz*dz);
+  lastX = x; lastY = y; lastZ = z;
+
+  // Push to waveform buffer
+  waveBuffer.push(delta);
+  if (waveBuffer.length > WAVE_LEN) waveBuffer.shift();
+
+  // Smooth energy for idle wave
+  globalEnergy += (Math.min(delta / MAX_AMP, 1) - globalEnergy) * 0.15;
+
+  // Update amp display
+  ampDisplay.textContent = delta.toFixed(1);
+
+  // Orb class
+  orb.className = 'orb';
+  if (delta > 30) orb.classList.add('shake-high');
+  else if (delta > 15) orb.classList.add('shake-med');
+  else if (delta > 5)  orb.classList.add('shake-low');
+
+  // Excite the blob wave proportional to acceleration delta
+  if (delta > 2) {
+    const strength = Math.min(delta / MAX_AMP, 1);
+    exciteBands(strength);
+    for (let b = 0; b < NUM_BANDS; b++) {
+      bandPhase[b] += strength * (0.3 + Math.random() * 0.4);
+    }
+  }
+
+  // Shake event
+  const now = Date.now();
+  if (delta > SHAKE_THRESHOLD && now - lastShakeTime > COOLDOWN_MS) {
+    lastShakeTime = now;
+    shakeCount++;
+    if (delta > peakAmp) peakAmp = delta;
+
+    shakeTimestamps.push(now);
+    while (shakeTimestamps.length > 10 ||
+           (shakeTimestamps.length > 1 && now - shakeTimestamps[0] > 5000)) {
+      shakeTimestamps.shift();
+    }
+
+    const freq  = calcFrequency();
+    const level = classify(delta);
+    updateMetrics(delta, freq, level);
+    triggerShakeEffect(level);
+    addLog(`Amp ${delta.toFixed(1)} m/s²  │  Freq ${freq.toFixed(2)} Hz  │  ${level}`);
+  }
+
+  document.getElementById('peakVal').textContent = peakAmp.toFixed(1);
+  peakBar.style.width = Math.min(peakAmp / MAX_AMP * 100, 100) + '%';
+}
+
+// ── Animation loop ────────────────────────────────────────────────────
+let lastTime = 0;
+function loop(ts) {
+  const dt = Math.min((ts - lastTime) / 1000, 0.05);
+  lastTime = ts;
+
+  wavePhase += dt * (1 + globalEnergy * 3);
+  hueShift  = (hueShift + dt * 8) % 360;
+
+  updatePetals(dt);
+  drawOrbWave();
+  drawWaveform();
+
+  requestAnimationFrame(loop);
+}
+
+// ── Smooth wave physics ───────────────────────────────────────────────
+// Instead of spiky petals, we use a small set of overlapping sine waves
+// whose amplitudes are driven by shake energy → smooth music-blob look.
+
+// We track "band" amplitudes — like an equalizer with a few frequency bands
+const NUM_BANDS = 6;
+const bandAmp   = new Float32Array(NUM_BANDS);  // current amplitude 0-1
+const bandVel   = new Float32Array(NUM_BANDS);  // decay velocity
+const bandPhase = new Float32Array(NUM_BANDS);  // individual phase offsets
+for (let i = 0; i < NUM_BANDS; i++) bandPhase[i] = (i / NUM_BANDS) * Math.PI * 2;
+
+const BAND_DECAY  = 0.94;   // how fast bands fade (per frame)
+const BAND_SPRING = 0.06;   // how fast they return to idle
+
+function updatePetals(dt) {
+  // Idle drift: each band breathes gently at its own rate
+  const idleBase = 0.06 + globalEnergy * 0.08;
+  for (let b = 0; b < NUM_BANDS; b++) {
+    const idle = idleBase * (0.4 + 0.6 * ((b + 1) / NUM_BANDS));
+    bandAmp[b] += (idle - bandAmp[b]) * BAND_SPRING;
+    bandAmp[b] = Math.max(0, Math.min(bandAmp[b], 1));
+  }
+}
+
+// Called from onMotion when shake detected
+function exciteBands(strength) {
+  for (let b = 0; b < NUM_BANDS; b++) {
+    // Higher bands get less energy (like real audio EQ — bass hits harder)
+    const falloff = 1 - (b / NUM_BANDS) * 0.5;
+    bandAmp[b] = Math.min(1, bandAmp[b] + strength * falloff * (0.6 + Math.random() * 0.4));
+  }
+}
+
+// ── Smooth blob point sampler ─────────────────────────────────────────
+// Returns radius at a given angle by summing layered smooth sine waves
+function getBlobRadius(angle, baseR, maxExtra) {
+  let offset = 0;
+  for (let b = 0; b < NUM_BANDS; b++) {
+    const freq  = b + 2;          // 2, 3, 4, 5, 6, 7 lobes
+    const speed = 0.4 + b * 0.15; // each band rotates at different speed
+    const phase = bandPhase[b] + wavePhase * speed;
+    offset += bandAmp[b] * Math.sin(angle * freq + phase) / (b + 1);
+  }
+  // Normalise so max offset ≈ maxExtra at full amplitude
+  const norm = offset / (NUM_BANDS * 0.5);
+  return baseR + norm * maxExtra;
+}
+
+// ── Colour from energy ────────────────────────────────────────────────
+function energyColor(energy, alpha) {
+  let r, g, b;
+  if (energy < 0.35) {
+    const t = energy / 0.35;
+    r = Math.round(t * 0);
+    g = Math.round((1-t)*120 + t*220);
+    b = Math.round((1-t)*255 + t*180);
+  } else if (energy < 0.7) {
+    const t = (energy - 0.35) / 0.35;
+    r = Math.round(t * 255);
+    g = Math.round((1-t)*220 + t*160);
+    b = Math.round((1-t)*180 + t*30);
+  } else {
+    const t = (energy - 0.7) / 0.3;
+    r = 255;
+    g = Math.round((1-t)*160 + t*40);
+    b = Math.round((1-t)*30  + t*80);
+  }
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+// ── Draw smooth music-blob around the orb ────────────────────────────
+function drawOrbWave() {
+  const W = oc.offsetWidth;
+  const H = oc.offsetHeight;
+  octx.clearRect(0, 0, W, H);
+
+  const cx = W / 2, cy = H / 2;
+  const baseR   = W * 0.29;
+  const maxExtra = W * 0.19;
+  const STEPS   = 180;   // smooth polygon resolution
+
+  // Pre-compute points
+  const pts = [];
+  for (let i = 0; i < STEPS; i++) {
+    const angle = (i / STEPS) * Math.PI * 2 - Math.PI / 2;
+    const r     = getBlobRadius(angle, baseR, maxExtra);
+    pts.push({ x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r });
+  }
+
+  // ── Helper: draw a smooth closed Catmull-Rom-like curve ───────────
+  function drawSmooth(points, close = true) {
+    octx.beginPath();
+    const n = points.length;
+    for (let i = 0; i < n; i++) {
+      const p0 = points[(i - 1 + n) % n];
+      const p1 = points[i];
+      const p2 = points[(i + 1) % n];
+      const p3 = points[(i + 2) % n];
+      if (i === 0) octx.moveTo(p1.x, p1.y);
+      // Catmull-Rom control points
+      const cp1x = p1.x + (p2.x - p0.x) / 6;
+      const cp1y = p1.y + (p2.y - p0.y) / 6;
+      const cp2x = p2.x - (p3.x - p1.x) / 6;
+      const cp2y = p2.y - (p3.y - p1.y) / 6;
+      octx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, p2.x, p2.y);
+    }
+    if (close) octx.closePath();
+  }
+
+  const energy = globalEnergy;
+
+  // ── Layer 3: wide soft glow ───────────────────────────────────────
+  octx.save();
+  octx.shadowBlur  = 28;
+  octx.shadowColor = energyColor(energy, 0.6);
+  octx.strokeStyle = energyColor(energy, 0.12);
+  octx.lineWidth   = 18;
+  drawSmooth(pts);
+  octx.stroke();
+  octx.restore();
+
+  // ── Layer 2: medium glow ──────────────────────────────────────────
+  octx.save();
+  octx.shadowBlur  = 10;
+  octx.shadowColor = energyColor(energy, 0.9);
+  octx.strokeStyle = energyColor(energy, 0.35);
+  octx.lineWidth   = 5;
+  drawSmooth(pts);
+  octx.stroke();
+  octx.restore();
+
+  // ── Filled gradient blob ──────────────────────────────────────────
+  octx.save();
+  const fillGrad = octx.createRadialGradient(cx, cy, 0, cx, cy, baseR + maxExtra);
+  fillGrad.addColorStop(0,   energyColor(energy, 0.13));
+  fillGrad.addColorStop(0.6, energyColor(energy, 0.06));
+  fillGrad.addColorStop(1,   energyColor(energy, 0.0));
+  drawSmooth(pts);
+  octx.fillStyle = fillGrad;
+  octx.fill();
+  octx.restore();
+
+  // ── Layer 1: crisp bright outline ────────────────────────────────
+  octx.save();
+  octx.shadowBlur  = 4;
+  octx.shadowColor = energyColor(energy, 1);
+  octx.strokeStyle = energyColor(energy, 0.9);
+  octx.lineWidth   = 1.8;
+  drawSmooth(pts);
+  octx.stroke();
+  octx.restore();
+
+  // ── Second inner ring (quieter, offset phase) ─────────────────────
+  const innerPts = [];
+  for (let i = 0; i < STEPS; i++) {
+    const angle = (i / STEPS) * Math.PI * 2 - Math.PI / 2;
+    const r     = getBlobRadius(angle + 0.9, baseR * 0.82, maxExtra * 0.45);
+    innerPts.push({ x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r });
+  }
+
+  octx.save();
+  octx.shadowBlur  = 6;
+  octx.shadowColor = energyColor(energy, 0.5);
+  octx.strokeStyle = energyColor(energy, 0.25);
+  octx.lineWidth   = 1.2;
+  drawSmooth(innerPts);
+  octx.stroke();
+  octx.restore();
+}
+
+// ── Waveform (bottom panel) ────────────────────────────────────────────
+function drawWaveform() {
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  ctx.strokeStyle = 'rgba(30,30,46,0.8)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = H * i / 4;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, 'rgba(0,207,255,0.25)');
+  grad.addColorStop(1, 'rgba(0,207,255,0)');
+
+  const step = W / (WAVE_LEN - 1);
+  ctx.beginPath();
+  ctx.moveTo(0, H);
+  for (let i = 0; i < waveBuffer.length; i++) {
+    const x = i * step;
+    const y = H - Math.min(waveBuffer[i] / MAX_AMP, 1) * (H - 4);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.lineTo((waveBuffer.length-1)*step, H);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.strokeStyle = '#00cfff';
+  ctx.lineWidth = 1.5;
+  ctx.shadowColor = '#00cfff';
+  ctx.shadowBlur = 6;
+  for (let i = 0; i < waveBuffer.length; i++) {
+    const x = i * step;
+    const y = H - Math.min(waveBuffer[i] / MAX_AMP, 1) * (H - 4);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────
+function calcFrequency() {
+  if (shakeTimestamps.length < 2) return 0;
+  const span = (shakeTimestamps[shakeTimestamps.length-1] - shakeTimestamps[0]) / 1000;
+  return span <= 0 ? 0 : (shakeTimestamps.length - 1) / span;
+}
+
+function classify(amp) {
+  if (amp > 40) return 'VIOLENT';
+  if (amp > 25) return 'STRONG';
+  if (amp > 15) return 'MODERATE';
+  return 'LIGHT';
+}
+
+function updateMetrics(amp, freq, level) {
+  document.getElementById('freqVal').textContent = freq.toFixed(2);
+  freqBar.style.width = Math.min(freq / MAX_FREQ * 100, 100) + '%';
+  document.getElementById('countVal').textContent = shakeCount;
+  document.getElementById('levelVal').textContent = level;
+
+  const pct = Math.min(amp / MAX_AMP * 100, 100);
+  levelBar.style.width = pct + '%';
+  levelBar.className = 'bar-fill';
+  if (amp > 40) levelBar.classList.add('red');
+  else if (amp > 20) levelBar.classList.add('yellow');
+  else levelBar.classList.add('green');
+}
+
+function triggerShakeEffect(level) {
+  const colors = {
+    LIGHT:    'rgba(255,204,0,0.05)',
+    MODERATE: 'rgba(0,207,255,0.09)',
+    STRONG:   'rgba(0,207,255,0.13)',
+    VIOLENT:  'rgba(255,51,102,0.18)',
+  };
+  flash.style.background = colors[level] || 'rgba(0,207,255,0.1)';
+  flash.classList.add('pop');
+  setTimeout(() => flash.classList.remove('pop'), 50);
+  document.body.classList.remove('shaking');
+  void document.body.offsetWidth;
+  document.body.classList.add('shaking');
+  setTimeout(() => document.body.classList.remove('shaking'), 320);
+}
+
+function addLog(msg, warn = false) {
+  const ts = new Date().toTimeString().slice(0,8);
+  const entry = document.createElement('div');
+  entry.className = 'log-entry fresh';
+  entry.innerHTML = `<span class="ts">${ts}</span>${msg}`;
+  if (warn) entry.style.color = 'var(--red)';
+  logEl.insertBefore(entry, logEl.firstChild);
+  setTimeout(() => entry.classList.remove('fresh'), 600);
+  while (logEl.children.length > 20) logEl.removeChild(logEl.lastChild);
+}
+
+// Start the render loop immediately (idle animation shows even before permission)
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
