@@ -1,6 +1,8 @@
 const DOMAIN_URL = "http://172.22.96.1:999";
 
+// ─────────────────────────────────────────────
 //  Genre Config
+// ─────────────────────────────────────────────
 const genreColors = {
   "Hip-Hop":    "#d97706",
   "Jazz/Blues": "#7c3aed",
@@ -12,12 +14,273 @@ const genreColors = {
   "Rock":       "#dc2626"
 };
 
+// ─────────────────────────────────────────────
+//  Neighbourhood Meta (for the Artist Finder)
+//  population: thousands of residents
+//  footTraffic: 1=low 2=medium 3=high
+//  venueQuality: 1=few/small 2=decent 3=excellent
+//  parkAccess: 1=limited 2=some 3=great
+//  streetFriendly: 1=limited 2=decent 3=strong culture
+//  vibeScore: 1-10 arts/music scene richness
+// ─────────────────────────────────────────────
+const neighbourhoodMeta = {
+  "Rivière-des-Prairies–Pointe-aux-Trembles": {
+    population: 105, footTraffic: 1, venueQuality: 1, parkAccess: 2, streetFriendly: 1, vibeScore: 2,
+    character: "Suburban waterfront community — tight-knit local events",
+    hotspots: {
+      street:       ["Rue Sherbrooke Est near Pointe-aux-Trembles market", "Ave Rodolphe-Forget pedestrian strip"],
+      park:         ["Parc-nature de la Pointe-aux-Prairies", "Bord-de-l'eau waterfront path"],
+      bar_cafe:     ["Local brasseries along Sherbrooke Est"],
+      concert_hall: ["Maison de la culture PAT, 12370 rue Notre-Dame Est"],
+      community:    ["Centre culturel de Pointe-aux-Trembles, 14001 rue Notre-Dame Est"],
+      festival:     ["Bord-de-l'eau waterfront park — summer events"]
+    }
+  },
+  "Montréal-Est / Anjou": {
+    population: 70, footTraffic: 1, venueQuality: 1, parkAccess: 1, streetFriendly: 1, vibeScore: 2,
+    character: "Industrial east-end — local community halls and arena events",
+    hotspots: {
+      street:       ["Rue Sherbrooke Est commercial strip", "Carrefour Anjou entrance area"],
+      park:         ["Parc Jean-Duceppe", "Parc du Boisé-du-Tremblay"],
+      bar_cafe:     ["Brasseries along rue Sherbrooke Est"],
+      concert_hall: ["Centre culturel d'Anjou, 7500 blvd des Galeries-d'Anjou"],
+      community:    ["Centre culturel d'Anjou, 7500 blvd des Galeries-d'Anjou"],
+      festival:     ["Carrefour Anjou outdoor plaza"]
+    }
+  },
+  "Saint-Léonard": {
+    population: 75, footTraffic: 2, venueQuality: 1, parkAccess: 1, streetFriendly: 2, vibeScore: 3,
+    character: "Dense commercial strips — diverse Latin & Caribbean audience",
+    hotspots: {
+      street:       ["Jean-Talon Est & Viau intersection", "Lacordaire & Jean-Talon commercial strip"],
+      park:         ["Parc Wilfrid-Bastien", "Parc de la Coulée-Verte"],
+      bar_cafe:     ["Italian cafés along Bélanger Est", "Latin restaurants on Jean-Talon Est"],
+      concert_hall: ["Maison de la culture Saint-Léonard, 5255 rue Jarry Est"],
+      community:    ["Maison de la culture Saint-Léonard, 5255 rue Jarry Est"],
+      festival:     ["Jean-Talon Est summer market area"]
+    }
+  },
+  "Montréal-Nord": {
+    population: 83, footTraffic: 2, venueQuality: 1, parkAccess: 2, streetFriendly: 2, vibeScore: 4,
+    character: "Vibrant north — Caribbean & African community events, strong hip-hop scene",
+    hotspots: {
+      street:       ["Blvd Henri-Bourassa Est & Pie-IX", "Rue Fleury Est commercial strip"],
+      park:         ["Parc Aimé-Léonard", "Parc Henri-Bourassa"],
+      bar_cafe:     ["Haitian restaurants on Henri-Bourassa", "Bars on Pie-IX Blvd"],
+      concert_hall: ["Maison de la culture Montréal-Nord, 12144 rue Prieur Est"],
+      community:    ["Maison de la culture Montréal-Nord, 12144 rue Prieur Est"],
+      festival:     ["Parc Aimé-Léonard — summer neighbourhood festivals"]
+    }
+  },
+  "Ahuntsic-Cartierville": {
+    population: 135, footTraffic: 2, venueQuality: 2, parkAccess: 3, streetFriendly: 2, vibeScore: 5,
+    character: "Residential north — riverfront parks, maisons de la culture",
+    hotspots: {
+      street:       ["Rue Fleury Ouest between Lajeunesse & St-Denis", "Cartierville plaza area"],
+      park:         ["Parc-nature de l'Île-de-la-Visitation", "Bord-de-la-Rivière-des-Prairies path"],
+      bar_cafe:     ["Cafés and bars on rue Fleury Ouest", "Terrasse Ahuntsic"],
+      concert_hall: ["Maison de la culture Ahuntsic, 10300 rue Lajeunesse"],
+      community:    ["Maison de la culture Ahuntsic, 10300 rue Lajeunesse"],
+      festival:     ["Parc-nature de l'Île-de-la-Visitation — summer concerts"]
+    }
+  },
+  "Villeray–Saint-Michel–Parc-Extension": {
+    population: 145, footTraffic: 2, venueQuality: 2, parkAccess: 2, streetFriendly: 3, vibeScore: 6,
+    character: "Ultra-diverse — Bengali, Haitian, Moroccan street culture on Jarry & Jean-Talon",
+    hotspots: {
+      street:       ["Jean-Talon Ouest at Parc-Extension (Mile-Ex border)", "Rue Jarry & Lajeunesse intersection"],
+      park:         ["Parc Jarry — massive outdoor park & stage", "Parc du Pélican"],
+      bar_cafe:     ["Café Cleopatra strip", "Villeray bar scene on Jarry"],
+      concert_hall: ["Maison de la culture Villeray, 1425 rue Jarry Est"],
+      community:    ["Maison de la culture Villeray, 1425 rue Jarry Est"],
+      festival:     ["Parc Jarry — Mural, Jazz Fest, major outdoor festivals"]
+    }
+  },
+  "Rosemont–La Petite-Patrie": {
+    population: 137, footTraffic: 3, venueQuality: 2, parkAccess: 2, streetFriendly: 3, vibeScore: 8,
+    character: "Hip & creative — buzzing with live music bars, record shops, art studios",
+    hotspots: {
+      street:       ["Ave du Mont-Royal Est & St-Denis", "Rue Masson & 2nd Ave strip"],
+      park:         ["Parc Maisonneuve & Olympic Stadium esplanade", "Parc Molson"],
+      bar_cafe:     ["Quai des Brumes, 4481 rue St-Denis", "Le Ministère, 4521 rue St-Denis"],
+      concert_hall: ["Théâtre Fairmount, 5240 ave du Parc"],
+      community:    ["Maison de la culture Rosemont, 6707 ave de Lorimier"],
+      festival:     ["Parc Maisonneuve — Piknic Électronik, outdoor festivals"]
+    }
+  },
+  "Outremont": {
+    population: 25, footTraffic: 2, venueQuality: 3, parkAccess: 2, streetFriendly: 1, vibeScore: 7,
+    character: "Affluent cultural enclave — refined concert halls, classical & opera tradition",
+    hotspots: {
+      street:       ["Ave Bernard & Hutchison (café terrasse strip)"],
+      park:         ["Parc du Mont-Royal access via Camillien-Houde"],
+      bar_cafe:     ["Ave Bernard wine bars and cafés"],
+      concert_hall: ["Théâtre Outremont, 1248 ave Bernard Ouest", "Rialto Theatre, 5723 ave du Parc"],
+      community:    ["Maison de la culture Côte-des-Neiges, 5290 ch de la Côte-des-Neiges"],
+      festival:     ["Ave Bernard summer festival strip"]
+    }
+  },
+  "Le Plateau-Mont-Royal": {
+    population: 100, footTraffic: 3, venueQuality: 3, parkAccess: 2, streetFriendly: 3, vibeScore: 10,
+    character: "Montréal's bohemian heart — highest concentration of live music venues in the city",
+    hotspots: {
+      street:       ["St-Denis & Mont-Royal Ave (most famous busking corner)", "Blvd St-Laurent & Rachel (the Main)"],
+      park:         ["Parc Lafontaine (outdoor stage + amphitheatre)", "Carré Saint-Louis fountain plaza"],
+      bar_cafe:     ["Casa del Popolo, 4873 blvd St-Laurent", "L'Escogriffe, 4461 rue St-Denis", "Sala Rossa, 4848 blvd St-Laurent"],
+      concert_hall: ["Sala Rossa, 4848 blvd St-Laurent", "Foufounes Électriques, 87 rue Ste-Catherine Est"],
+      community:    ["Maison de la culture du Plateau, 465 ave du Mont-Royal Est"],
+      festival:     ["Parc Lafontaine — Jazz Fest, Fringe, Osheaga (shuttle hub)"]
+    }
+  },
+  "Saint-Laurent": {
+    population: 98, footTraffic: 2, venueQuality: 2, parkAccess: 2, streetFriendly: 1, vibeScore: 5,
+    character: "Industrial-creative corridor — electronic clubs, production studios",
+    hotspots: {
+      street:       ["Blvd Marcel-Laurin commercial strip", "Place Vertu mall entrance"],
+      park:         ["Parc Basile-Routhier", "Parc du Centenaire"],
+      bar_cafe:     ["Club Soda, 1225 blvd St-Laurent", "L'Astral, 305 rue Ste-Catherine Ouest"],
+      concert_hall: ["Studio TD (Métropolis), 59 rue Ste-Catherine Est", "L'Astral, 305 rue Ste-Catherine Ouest"],
+      community:    ["Maison de la culture St-Laurent, 1440 rue Fleury Ouest"],
+      festival:     ["Parc du Centenaire — local summer events"]
+    }
+  },
+  "Mont-Royal (TMR)": {
+    population: 20, footTraffic: 1, venueQuality: 2, parkAccess: 2, streetFriendly: 1, vibeScore: 4,
+    character: "Small affluent enclave — local concert series, private and community events",
+    hotspots: {
+      street:       ["Ave Victoria commercial strip"],
+      park:         ["Parc du Centenaire TMR", "Belvédère Camillien-Houde"],
+      bar_cafe:     ["Ave Victoria café terrasses"],
+      concert_hall: ["Salle Marguerite-Bourgeoys, 2900 blvd Édouard-Montpetit"],
+      community:    ["Maison de la culture TMR, 2900 blvd Édouard-Montpetit"],
+      festival:     ["Parc du Centenaire TMR — summer festival"]
+    }
+  },
+  "Côte-des-Neiges–NDG": {
+    population: 167, footTraffic: 3, venueQuality: 2, parkAccess: 3, streetFriendly: 2, vibeScore: 7,
+    character: "Montréal's most diverse borough — university crowd, Mount Royal & Oratory access",
+    hotspots: {
+      street:       ["Queen Mary & Côte-des-Neiges intersection (student hub)", "Monkland Ave in NDG"],
+      park:         ["Parc du Mont-Royal summit & lower slopes", "Parc Angrignon (accessible via trail)"],
+      bar_cafe:     ["Café Resonance, 5175A ave du Parc", "The Burgundy Lion, 2496 rue Notre-Dame Ouest", "Darling Foundry café"],
+      concert_hall: ["Théâtre Déjà Vu, 3555 rue St-Denis", "Salle Claude-Champagne, 200 ave Vincent-d'Indy (Université de Montréal)"],
+      community:    ["Maison de la culture Côte-des-Neiges, 5290 ch de la Côte-des-Neiges"],
+      festival:     ["Parc du Mont-Royal — Tam-tams (Sunday drumming), summer picnics"]
+    }
+  },
+  "Ville-Marie (Downtown)": {
+    population: 80, footTraffic: 3, venueQuality: 3, parkAccess: 2, streetFriendly: 3, vibeScore: 9,
+    character: "Downtown core — Place des Arts, Bell Centre, maximum foot traffic year-round",
+    hotspots: {
+      street:       ["Rue Ste-Catherine & Peel (busiest pedestrian corner)", "Place des Arts esplanade", "Vieux-Port waterfront promenade"],
+      park:         ["Place des Arts outdoor amphitheatre", "Quartier des spectacles plaza", "Vieux-Port quays"],
+      bar_cafe:     ["Le Belmont, 4483 blvd St-Laurent", "Club Soda, 1225 blvd St-Laurent", "Cabaret Lion d'Or, 1676 rue Ontario Est"],
+      concert_hall: ["Place des Arts (Grande Salle, Théâtre Maisonneuve)", "Bell Centre, 1909 ave des Canadiens-de-Montréal", "Théâtre du Nouveau Monde, 84 rue Ste-Catherine Ouest"],
+      community:    ["Maison de la culture Frontenac, 2550 rue Ontario Est"],
+      festival:     ["Quartier des spectacles — Jazz Fest, Francofolies, Mural main stages"]
+    }
+  },
+  "Mercier–Hochelaga-Maisonneuve": {
+    population: 180, footTraffic: 2, venueQuality: 2, parkAccess: 2, streetFriendly: 2, vibeScore: 7,
+    character: "Gritty & authentic — growing arts scene, working-class music culture, rock venues",
+    hotspots: {
+      street:       ["Rue Ontario Est & Préfontaine (HoMa main strip)", "Ave Papineau & Ste-Catherine Est"],
+      park:         ["Parc Maisonneuve & Olympic Stadium esplanade", "Parc Morgan"],
+      bar_cafe:     ["O Patro Vys, 356 ave du Mont-Royal Est", "La Tulipe, 4530 ave Papineau"],
+      concert_hall: ["Théâtre Corona, 2490 rue Notre-Dame Ouest", "La Tulipe, 4530 ave Papineau"],
+      community:    ["Maison de la culture Maisonneuve, 4200 rue Ontario Est"],
+      festival:     ["Parc Maisonneuve — Piknic Électronik overflow, local festivals"]
+    }
+  },
+  "Le Sud-Ouest": {
+    population: 75, footTraffic: 2, venueQuality: 2, parkAccess: 2, streetFriendly: 2, vibeScore: 7,
+    character: "Griffintown & Pointe-St-Charles — gentrifying, indie venues, canal cycling path",
+    hotspots: {
+      street:       ["Rue Notre-Dame Ouest & Atwater (Griffintown)", "Rue Wellington in Verdun/Pointe-St-Charles"],
+      park:         ["Canal de Lachine cycling & walking path", "Parc du Canal"],
+      bar_cafe:     ["Foufounes Électriques, 87 rue Ste-Catherine Est", "Taverne Normand, 82 rue Atwater", "Dominion Square Tavern"],
+      concert_hall: ["Théâtre Corona, 2490 rue Notre-Dame Ouest"],
+      community:    ["Bain Mathieu, 2915 rue Ontario Est"],
+      festival:     ["Canal de Lachine — summer outdoor events, Piknic Électronik"]
+    }
+  },
+  "Verdun": {
+    population: 68, footTraffic: 2, venueQuality: 1, parkAccess: 3, streetFriendly: 2, vibeScore: 5,
+    character: "Riverside community — Wellington St strip, waterfront parks, folk scene",
+    hotspots: {
+      street:       ["Rue Wellington main commercial strip", "Espace Wellington plaza"],
+      park:         ["Berges de Verdun waterfront park", "Parc de la Rive-Sud canal path"],
+      bar_cafe:     ["Espace Wellington bars", "Verre Bouteille, 4140 rue Wellington"],
+      concert_hall: ["Théâtre Verre Bouteille, 4140 rue Wellington"],
+      community:    ["Maison de la culture Verdun, 5955 rue Bannantyne"],
+      festival:     ["Berges de Verdun — summer riverside festivals, Divers/Cité adjacent"]
+    }
+  },
+  "LaSalle": {
+    population: 80, footTraffic: 2, venueQuality: 1, parkAccess: 2, streetFriendly: 1, vibeScore: 3,
+    character: "Canal-side suburb — maison de la culture, local community events",
+    hotspots: {
+      street:       ["Blvd Newman commercial strip", "Carrefour Angrignon entrance"],
+      park:         ["Canal de Lachine LaSalle section", "Rapides-du-Cheval-Blanc park"],
+      bar_cafe:     ["Blvd Newman brasseries"],
+      concert_hall: ["Maison de la culture LaSalle, 8395 blvd Newman"],
+      community:    ["Maison de la culture LaSalle, 8395 blvd Newman"],
+      festival:     ["Canal Lachine LaSalle — summer cycling events"]
+    }
+  },
+  "Lachine": {
+    population: 45, footTraffic: 1, venueQuality: 1, parkAccess: 3, streetFriendly: 2, vibeScore: 4,
+    character: "Historic waterfront — canal path events, summer festivals by the water",
+    hotspots: {
+      street:       ["Blvd St-Joseph historic strip", "Vieux-Lachine village square"],
+      park:         ["Parc René-Lévesque (peninsula)", "Canal de Lachine eastern basin"],
+      bar_cafe:     ["Terrasses along blvd St-Joseph"],
+      concert_hall: ["Maison de la culture Lachine, 1001 blvd St-Joseph"],
+      community:    ["Maison de la culture Lachine, 1001 blvd St-Joseph"],
+      festival:     ["Parc René-Lévesque — Lachine Canal summer festival, jazz on the water"]
+    }
+  },
+  "Côte-Saint-Luc / Hampstead / Montréal-Ouest": {
+    population: 35, footTraffic: 1, venueQuality: 1, parkAccess: 2, streetFriendly: 1, vibeScore: 3,
+    character: "Established anglophone/Jewish community — private events, community halls",
+    hotspots: {
+      street:       ["Blvd Cavendish shopping strip"],
+      park:         ["Parc de la Falaise (NDG adjacent)", "Local neighbourhood parks"],
+      bar_cafe:     ["Cavendish strip cafés"],
+      concert_hall: ["Salle Claude-Champagne, 200 ave Vincent-d'Indy"],
+      community:    ["Cummings Jewish Centre, 5700 blvd Westbury"],
+      festival:     ["Parc Cavendish — community summer events"]
+    }
+  },
+  "Pierrefonds-Roxboro / L'Île-Bizard": {
+    population: 80, footTraffic: 1, venueQuality: 1, parkAccess: 3, streetFriendly: 1, vibeScore: 2,
+    character: "Far-west suburban — outdoor parks, community center events",
+    hotspots: {
+      street:       ["Blvd Pierrefonds commercial strip"],
+      park:         ["Parc-nature de l'Île-Bizard", "Bord-du-lac Lakeshore path"],
+      bar_cafe:     ["Local family restaurants and cafés"],
+      concert_hall: ["Maison de la culture Pierrefonds, 13665 blvd Pierrefonds"],
+      community:    ["Maison de la culture Pierrefonds, 13665 blvd Pierrefonds"],
+      festival:     ["Île-Bizard waterfront — summer outdoor events"]
+    }
+  }
+};
+
+// ─────────────────────────────────────────────
 //  Neighbourhood Data
+//  Polygons retraced against the official
+//  Montreal borough map, staying within the
+//  island coastline. Coords are [lat, lng].
+// ─────────────────────────────────────────────
 const neighbourhoods = [
 
   // ── EAST ISLAND ──────────────────────────────
   {
     name: "Rivière-des-Prairies–Pointe-aux-Trembles",
+    topGenre: "Pop",
+    genres: { "Pop": 34, "Rock": 26, "Hip-Hop": 18, "Electronic": 12, "Folk/World": 6, "Jazz/Blues": 4 },
+    description: "Far-east waterfront community — pop radio staples and classic rock.",
+    venues: ["Maison de la culture PAT", "Centre culturel de Pointe-aux-Trembles"],
     center: [45.6724, -73.5214],
     polygon: [
       [45.63421,-73.56834],[45.64324,-73.55452],[45.64839,-73.54485],[45.63769,-73.52141],
@@ -41,6 +304,10 @@ const neighbourhoods = [
 
   {
     name: "Montréal-Est / Anjou",
+    topGenre: "Rock",
+    genres: { "Rock": 32, "Pop": 26, "Hip-Hop": 20, "Electronic": 12, "Folk/World": 6, "Jazz/Blues": 4 },
+    description: "East-end industrial boroughs — rock, pop and classic R&B.",
+    venues: ["Cabaret Lion d'Or", "Centre culturel Anjou"],
     center: [45.6057, -73.5535],
     polygon: [
       [45.63421,-73.56834],[45.61546,-73.59601],[45.61403,-73.5986],[45.6126,-73.60232],
@@ -60,6 +327,10 @@ const neighbourhoods = [
 
   {
     name: "Saint-Léonard",
+    topGenre: "Hip-Hop",
+    genres: { "Hip-Hop": 36, "Pop": 26, "Electronic": 18, "Rock": 10, "Folk/World": 6, "Jazz/Blues": 4 },
+    description: "Diverse northeast — Latin, Caribbean & hip-hop dominate the airwaves.",
+    venues: ["Maison de la culture Saint-Léonard"],
     center: [45.5874, -73.5849],
     polygon: [
       [45.58144,-73.5685],[45.58189,-73.56804],[45.58203,-73.56699],[45.58248,-73.56674],
@@ -78,6 +349,10 @@ const neighbourhoods = [
 
   {
     name: "Montréal-Nord",
+    topGenre: "Hip-Hop",
+    genres: { "Hip-Hop": 40, "Pop": 22, "Electronic": 18, "Rock": 10, "Folk/World": 6, "Jazz/Blues": 4 },
+    description: "Dense north borough — strong Caribbean, African & hip-hop scene.",
+    venues: ["Maison de la culture Montréal-Nord"],
     center: [45.6013, -73.6282],
     polygon: [
       [45.61113,-73.60314],[45.61197,-73.60166],[45.63368,-73.62464],[45.6286,-73.63043],
@@ -93,6 +368,10 @@ const neighbourhoods = [
   // ── NORTH ISLAND ─────────────────────────────
   {
     name: "Ahuntsic-Cartierville",
+    topGenre: "Hip-Hop",
+    genres: { "Hip-Hop": 30, "Pop": 25, "Folk/World": 18, "Rock": 14, "Electronic": 8, "Jazz/Blues": 5 },
+    description: "Northern borough with strong Haitian & North African music scenes.",
+    venues: ["Maison de la culture Ahuntsic", "Café Cléopâtre"],
     center: [45.5517, -73.6857],
     polygon: [
       [45.58363,-73.6543],[45.58157,-73.65552],[45.58093,-73.6571],[45.58013,-73.65815],
@@ -131,6 +410,10 @@ const neighbourhoods = [
   // ── CENTRAL-NORTH ─────────────────────────────
   {
     name: "Villeray–Saint-Michel–Parc-Extension",
+    topGenre: "Hip-Hop",
+    genres: { "Hip-Hop": 34, "Electronic": 22, "Folk/World": 20, "Pop": 14, "Indie/Alt": 6, "Rock": 4 },
+    description: "Super-diverse borough — Bengali, Haitian, Moroccan & hip-hop sounds.",
+    venues: ["Café Cleopatra", "Maison de la culture Villeray"],
     center: [45.5524, -73.6206],
     polygon: [
       [45.52365,-73.62078],[45.52751,-73.61753],[45.52768,-73.61707],[45.5286,-73.61692],
@@ -148,6 +431,10 @@ const neighbourhoods = [
 
   {
     name: "Rosemont–La Petite-Patrie",
+    topGenre: "Hip-Hop",
+    genres: { "Hip-Hop": 32, "Electronic": 26, "Indie/Alt": 18, "Pop": 14, "Rock": 6, "Folk/World": 4 },
+    description: "Young & multicultural — hip-hop beats and electronic nights.",
+    venues: ["Théâtre Fairmount", "Quai des Brumes", "Le Ministère"],
     center: [45.5536, -73.5864],
     polygon: [
       [45.58144,-73.5685],[45.58166,-73.5696],[45.58121,-73.56986],[45.58147,-73.57065],
@@ -166,6 +453,10 @@ const neighbourhoods = [
   // ── CENTRAL ───────────────────────────────────
   {
     name: "Outremont",
+    topGenre: "Classical",
+    genres: { "Classical": 40, "Jazz/Blues": 25, "Folk/World": 18, "Indie/Alt": 10, "Pop": 5, "Rock": 2 },
+    description: "Affluent & cultured — classical concerts, opera & world music.",
+    venues: ["Outremont Theatre", "Rialto Theatre", "Église Saint-Viateur"],
     center: [45.5109, -73.6057],
     polygon: [
       [45.51578,-73.59027],[45.52778,-73.61728],[45.51966,-73.6244],[45.51656,-73.62667],
@@ -180,6 +471,10 @@ const neighbourhoods = [
 
   {
     name: "Le Plateau-Mont-Royal",
+    topGenre: "Indie/Alt",
+    genres: { "Indie/Alt": 38, "Folk/World": 22, "Jazz/Blues": 18, "Hip-Hop": 10, "Pop": 8, "Electronic": 4 },
+    description: "Bohemian heart of MTL — indie, folk & jazz cafés everywhere.",
+    venues: ["Casa del Popolo", "Sala Rossa", "L'Escogriffe"],
     center: [45.5254, -73.5829],
     polygon: [
       [45.51578,-73.59027],[45.51679,-73.58937],[45.51164,-73.57814],[45.5082,-73.58014],
@@ -193,6 +488,10 @@ const neighbourhoods = [
   // ── WEST-CENTRAL ──────────────────────────────
   {
     name: "Saint-Laurent",
+    topGenre: "Electronic",
+    genres: { "Electronic": 34, "Hip-Hop": 28, "Pop": 18, "Rock": 10, "Folk/World": 6, "Indie/Alt": 4 },
+    description: "Industrial turned creative — electronic & hip-hop thrive here.",
+    venues: ["Club Soda", "L'Astral", "Studio TD"],
     center: [45.5005, -73.7343],
     polygon: [
       [45.46318,-73.68281],[45.48369,-73.67721],[45.48946,-73.68584],[45.49126,-73.68119],
@@ -216,6 +515,10 @@ const neighbourhoods = [
 
   {
     name: "Mont-Royal (TMR)",
+    topGenre: "Classical",
+    genres: { "Classical": 36, "Jazz/Blues": 24, "Folk/World": 18, "Indie/Alt": 12, "Pop": 6, "Rock": 4 },
+    description: "Affluent enclave — classical concerts, opera & refined jazz.",
+    venues: ["Salle Marguerite-Bourgeoys", "Maison de la culture TMR"],
     center: [45.5047, -73.6523],
     polygon: [
       [45.48369,-73.67721],[45.49127,-73.67513],[45.48681,-73.66804],[45.48676,-73.66586],
@@ -233,6 +536,10 @@ const neighbourhoods = [
   // ── DOWNTOWN CORE ─────────────────────────────
   {
     name: "Côte-des-Neiges–NDG",
+    topGenre: "Folk/World",
+    genres: { "Folk/World": 30, "Classical": 22, "Rock": 18, "Jazz/Blues": 16, "Indie/Alt": 10, "Pop": 4 },
+    description: "Most diverse borough — world music from every continent.",
+    venues: ["Théâtre Déjà Vu", "The Burgundy Lion", "Café Resonance"],
     center: [45.4885, -73.6323],
     polygon: [
       [45.47935,-73.63082],[45.47897,-73.63117],[45.47837,-73.62992],[45.47697,-73.63567],
@@ -265,6 +572,10 @@ const neighbourhoods = [
 
   {
     name: "Ville-Marie (Downtown)",
+    topGenre: "Pop",
+    genres: { "Pop": 30, "Electronic": 25, "Hip-Hop": 20, "Rock": 12, "Jazz/Blues": 8, "Classical": 5 },
+    description: "High-traffic commercial core — mainstream pop & club sounds dominate.",
+    venues: ["Bell Centre", "Place des Arts", "Théâtre du Nouveau Monde"],
     center: [45.508, -73.5699],
     polygon: [
       [45.49633,-73.51958],[45.49924,-73.52048],[45.49933,-73.51991],[45.53257,-73.53023],
@@ -286,6 +597,10 @@ const neighbourhoods = [
 
   {
     name: "Mercier–Hochelaga-Maisonneuve",
+    topGenre: "Rock",
+    genres: { "Rock": 35, "Hip-Hop": 28, "Electronic": 18, "Indie/Alt": 12, "Pop": 5, "Folk/World": 2 },
+    description: "Gritty & authentic — rock venues, underground hip-hop & punk.",
+    venues: ["Théâtre Corona", "O Patro Vys", "La Tulipe"],
     center: [45.5829, -73.5373],
     polygon: [
       [45.58144,-73.5685],[45.57821,-73.55873],[45.57571,-73.55571],[45.57346,-73.54899],
@@ -319,6 +634,10 @@ const neighbourhoods = [
   // ── SOUTH & SOUTHWEST ─────────────────────────
   {
     name: "Le Sud-Ouest",
+    topGenre: "Indie/Alt",
+    genres: { "Indie/Alt": 28, "Electronic": 26, "Rock": 20, "Hip-Hop": 14, "Jazz/Blues": 8, "Pop": 4 },
+    description: "Griffintown & Pointe-St-Charles — rapidly gentrifying, indie & electronic.",
+    venues: ["Théâtre Corona", "Foufounes Électriques", "Astral"],
     center: [45.4694, -73.5813],
     polygon: [
       [45.48674,-73.58154],[45.48557,-73.58061],[45.48225,-73.58512],[45.48256,-73.58577],
@@ -343,6 +662,10 @@ const neighbourhoods = [
 
   {
     name: "Verdun",
+    topGenre: "Rock",
+    genres: { "Rock": 36, "Folk/World": 22, "Indie/Alt": 18, "Hip-Hop": 12, "Electronic": 8, "Pop": 4 },
+    description: "Riverside community — indie rock & folk, growing arts scene.",
+    venues: ["Théâtre Verre Bouteille", "Wellington St strip"],
     center: [45.4606, -73.5591],
     polygon: [
       [45.42805,-73.5398],[45.43315,-73.53347],[45.43715,-73.5297],[45.44229,-73.52603],
@@ -360,6 +683,10 @@ const neighbourhoods = [
 
   {
     name: "LaSalle",
+    topGenre: "Rock",
+    genres: { "Rock": 30, "Pop": 26, "Folk/World": 20, "Electronic": 12, "Hip-Hop": 8, "Jazz/Blues": 4 },
+    description: "Canal-side borough — roots music, folk festivals and riverside rock.",
+    venues: ["Maison de la culture LaSalle", "Canal events"],
     center: [45.4291, -73.617],
     polygon: [
       [45.4218,-73.6661],[45.41788,-73.65539],[45.41329,-73.64826],[45.41093,-73.64359],
@@ -376,6 +703,10 @@ const neighbourhoods = [
 
   {
     name: "Lachine",
+    topGenre: "Folk/World",
+    genres: { "Folk/World": 28, "Rock": 26, "Pop": 20, "Electronic": 14, "Hip-Hop": 8, "Jazz/Blues": 4 },
+    description: "Canal-side borough — roots music and folk festivals by the water.",
+    venues: ["Maison de la culture Lachine", "Canal Lachine events"],
     center: [45.4464, -73.6803],
     polygon: [
       [45.4218,-73.6661],[45.43219,-73.66586],[45.43343,-73.66218],[45.43698,-73.65405],
@@ -394,6 +725,10 @@ const neighbourhoods = [
   // ── WEST ISLAND ───────────────────────────────
   {
     name: "Côte-Saint-Luc / Hampstead / Montréal-Ouest",
+    topGenre: "Classical",
+    genres: { "Classical": 28, "Jazz/Blues": 26, "Pop": 22, "Folk/World": 14, "Rock": 6, "Electronic": 4 },
+    description: "Established anglophone/Jewish community — jazz clubs and classical music.",
+    venues: ["Salle Claude-Champagne", "Cummings Jewish Centre"],
     center: [45.464, -73.6662],
     polygon: [
       [45.46318,-73.68281],[45.46215,-73.68129],[45.46136,-73.68183],[45.46101,-73.6828],
@@ -411,6 +746,10 @@ const neighbourhoods = [
 
   {
     name: "Pierrefonds-Roxboro / L'Île-Bizard",
+    topGenre: "Pop",
+    genres: { "Pop": 32, "Rock": 26, "Classical": 16, "Electronic": 12, "Folk/World": 8, "Hip-Hop": 6 },
+    description: "Far west suburban borough — pop and classic rock dominate.",
+    venues: ["Maison de la culture Pierrefonds"],
     center: [45.4873, -73.848],
     polygon: [
       [45.44678,-73.90435],[45.4475,-73.90234],[45.44635,-73.90147],[45.44671,-73.90013],
@@ -469,6 +808,10 @@ function updateNeighborhoodsStats() {
 			);
 			if (isInside) {
 				matchingEvents.push(event);
+				// Assign neighbourhood name so filterEventsByArea() works for server events
+				if (!event.neighbourhood) {
+					event.neighbourhood = neighbourhood.name;
+				}
 			}
 		}
 
@@ -487,11 +830,14 @@ function updateNeighborhoodsStats() {
 		}
 
 		const topGenre = Object.entries(genreCounts)
-			.sort((a, b) => b[1] - a[1])[0]?.[0] || "No events";
+			.sort((a, b) => b[1] - a[1])[0]?.[0] || null;
 		neighbourhood.events = matchingEvents;
 		neighbourhood.totalEvents = total;
-		neighbourhood.genres = genres;
-		neighbourhood.topGenre = topGenre;
+		if (total > 0) {
+			neighbourhood.genres = genres;
+			neighbourhood.topGenre = topGenre;
+		}
+		// else: keep static topGenre/genres as fallback
 	}
 }
 
@@ -519,7 +865,9 @@ function pointInPolygon(point, polygon) {
 	return inside;
 }
 
+// ─────────────────────────────────────────────
 //  Map Setup
+// ─────────────────────────────────────────────
 const montreal = [45.5200, -73.6100];
 const map = L.map("map").setView(montreal, 11);
 
@@ -528,22 +876,33 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   opacity: 0.85
 }).addTo(map);
 
-//  Draw Neighbourhood Zones
-let zoneLayer = L.layerGroup().addTo(map);
-let polyRefs = {};
+// ─────────────────────────────────────────────
+//  Zone & Label Layers
+// ─────────────────────────────────────────────
+let zoneLayer  = L.layerGroup().addTo(map);
+let labelLayer = L.layerGroup().addTo(map);
+let polyRefs   = {};
+let labelRefs  = {};
+let zonesVisible       = true;
+let selectedNeighbourhood = null;
 
+// ─────────────────────────────────────────────
+//  Draw Neighbourhood Zones
+// ─────────────────────────────────────────────
 function drawNeighbourhoodZones() {
   zoneLayer.clearLayers();
-  polyRefs = {};
+  labelLayer.clearLayers();
+  polyRefs  = {};
+  labelRefs = {};
 
   neighbourhoods.forEach(n => {
     const color = genreColors[n.topGenre];
 
     const poly = L.polygon(n.polygon, {
-      color: color,
-      fillColor: color,
-      fillOpacity: 0.22,
-      weight: 2
+      color:       color,
+      fillColor:   color,
+      fillOpacity: 0.10,
+      weight:      1.5
     });
 
     const genreRows = Object.entries(n.genres)
@@ -559,25 +918,35 @@ function drawNeighbourhoodZones() {
           <span class="genre-pct">${pct}%</span>
         </div>`).join("");
 
+    const venueList = n.venues ? n.venues.map(v => `<span class="venue-tag">${v}</span>`).join("") : "";
+
     poly.bindPopup(`
       <div class="zone-popup">
         <div class="zone-header" style="border-left:4px solid ${color}">
           <strong>${n.name}</strong>
           <span class="top-badge" style="background:${color}">${n.topGenre}</span>
         </div>
+        ${n.description ? `<p class="zone-desc">${n.description}</p>` : ""}
         <div class="genre-chart">${genreRows}</div>
+        ${venueList ? `<div class="venue-list"><strong>🎤 Venues:</strong><br>${venueList}</div>` : ""}
       </div>
     `, { maxWidth: 320 });
 
     poly.on("mouseover", () => {
-      poly.setStyle({ fillOpacity: 0.45, weight: 3 });
+      if (selectedNeighbourhood && selectedNeighbourhood !== n.name) return;
+      poly.setStyle({ fillOpacity: 0.28, weight: 2.5 });
       highlightNeighbourhood(n.name);
     });
     poly.on("mouseout", () => {
-      poly.setStyle({ fillOpacity: 0.22, weight: 2 });
+      if (selectedNeighbourhood === n.name) {
+        poly.setStyle({ fillOpacity: 0.18, weight: 2 });
+        return;
+      }
+      if (selectedNeighbourhood) return;
+      poly.setStyle({ fillOpacity: 0.10, weight: 1.5 });
       clearHighlight();
     });
-    poly.on("click", () => showNeighbourhoodDetail(n));
+    poly.on("click", () => handleNeighbourhoodClick(n));
 
     zoneLayer.addLayer(poly);
     polyRefs[n.name] = poly;
@@ -587,11 +956,83 @@ function drawNeighbourhoodZones() {
       html: `<div style="border-color:${color};color:${color}"><span>${n.topGenre}</span></div>`,
       iconSize: [0, 0]
     });
-    L.marker(n.center, { icon: label, interactive: false }).addTo(zoneLayer);
+    const labelMarker = L.marker(n.center, { icon: label, interactive: false });
+    labelLayer.addLayer(labelMarker);
+    labelRefs[n.name] = labelMarker;
   });
 }
 
+// ─────────────────────────────────────────────
+//  Neighbourhood Selection / Isolation
+// ─────────────────────────────────────────────
+function handleNeighbourhoodClick(n) {
+  if (selectedNeighbourhood === n.name) {
+    deselectNeighbourhood();
+  } else {
+    selectNeighbourhood(n);
+  }
+}
+
+function selectNeighbourhood(n) {
+  selectedNeighbourhood = n.name;
+  const color = genreColors[n.topGenre];
+
+  Object.entries(polyRefs).forEach(([name, poly]) => {
+    if (name === n.name) {
+      poly.setStyle({ color, fillColor: color, opacity: 1, fillOpacity: 0.18, weight: 2 });
+    } else {
+      poly.setStyle({ opacity: 0, fillOpacity: 0 });
+    }
+  });
+
+  Object.entries(labelRefs).forEach(([name, marker]) => {
+    marker.setOpacity(name === n.name ? 1 : 0);
+  });
+
+  showNeighbourhoodDetail(n);
+  filterEventsByArea(n.name);
+}
+
+function deselectNeighbourhood() {
+  selectedNeighbourhood = null;
+  restoreAllZones();
+  document.getElementById("neighbourhoodDetail").classList.remove("visible");
+  clearEventFilter();
+}
+
+function restoreAllZones() {
+  neighbourhoods.forEach(n => {
+    const color = genreColors[n.topGenre];
+    const poly  = polyRefs[n.name];
+    if (poly) poly.setStyle({ color, fillColor: color, opacity: 1, fillOpacity: 0.10, weight: 1.5 });
+    const lbl = labelRefs[n.name];
+    if (lbl) lbl.setOpacity(1);
+  });
+}
+
+// ─────────────────────────────────────────────
+//  Toggle Zones Visibility
+// ─────────────────────────────────────────────
+function toggleZones() {
+  zonesVisible = !zonesVisible;
+  const btn = document.getElementById("toggleZonesBtn");
+  const eyeIcon = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+  if (zonesVisible) {
+    map.addLayer(zoneLayer);
+    map.addLayer(labelLayer);
+    btn.innerHTML = eyeIcon + " Hide Zones";
+    btn.classList.remove("zones-hidden");
+  } else {
+    map.removeLayer(zoneLayer);
+    map.removeLayer(labelLayer);
+    btn.innerHTML = eyeIcon + " Show Zones";
+    btn.classList.add("zones-hidden");
+  }
+}
+
+// ─────────────────────────────────────────────
 //  Neighbourhood Detail Overlay
+// ─────────────────────────────────────────────
 function showNeighbourhoodDetail(n) {
   const panel = document.getElementById("neighbourhoodDetail");
   const color = genreColors[n.topGenre];
@@ -609,6 +1050,8 @@ function showNeighbourhoodDetail(n) {
         <span class="detail-pct">${pct}%</span>
       </div>`).join("");
 
+  const venueItems = n.venues ? n.venues.map(v => `<li>${v}</li>`).join("") : "";
+
   panel.innerHTML = `
     <div class="detail-header" style="background:${color}18;border-left:4px solid ${color}">
       <div>
@@ -617,10 +1060,16 @@ function showNeighbourhoodDetail(n) {
       </div>
       <button class="close-detail" onclick="closeDetail()">✕</button>
     </div>
+    ${n.description ? `<p class="detail-desc">${n.description}</p>` : ""}
     <div class="detail-section">
       <div class="section-title">Music Taste Breakdown</div>
       ${genreRows}
     </div>
+    ${venueItems ? `
+    <div class="detail-section">
+      <div class="section-title">🎤 Where to Perform</div>
+      <ul class="venue-list-ul">${venueItems}</ul>
+    </div>` : ""}
     <button class="perform-here-btn" style="background:${color}" onclick="filterEventsByArea('${n.name}')">
       🎸 Find Events Here
     </button>
@@ -630,6 +1079,11 @@ function showNeighbourhoodDetail(n) {
 
 function closeDetail() {
   document.getElementById("neighbourhoodDetail").classList.remove("visible");
+  if (selectedNeighbourhood) {
+    selectedNeighbourhood = null;
+    restoreAllZones();
+    clearEventFilter();
+  }
 }
 
 function highlightNeighbourhood(name) {
@@ -642,7 +1096,9 @@ function clearHighlight() {
   document.querySelectorAll(".hood-card").forEach(c => c.classList.remove("hovered"));
 }
 
+// ─────────────────────────────────────────────
 //  Left Sidebar — Neighbourhood List
+// ─────────────────────────────────────────────
 function renderNeighbourhoodList() {
   const container = document.getElementById("hoodList");
   container.innerHTML = neighbourhoods.map(n => {
@@ -673,10 +1129,12 @@ function flyToNeighbourhood(name) {
   const n = neighbourhoods.find(x => x.name === name);
   if (!n) return;
   map.flyTo(n.center, 13, { duration: 1 });
-  setTimeout(() => showNeighbourhoodDetail(n), 800);
+  setTimeout(() => selectNeighbourhood(n), 800);
 }
 
+// ─────────────────────────────────────────────
 //  Legend
+// ─────────────────────────────────────────────
 function renderLegend() {
   document.getElementById("genreLegend").innerHTML = Object.entries(genreColors).map(([g,c]) => `
     <div class="legend-item">
@@ -685,12 +1143,14 @@ function renderLegend() {
     </div>`).join("");
 }
 
+// ─────────────────────────────────────────────
 //  Events
+// ─────────────────────────────────────────────
 let events = [];
 
 async function loadEvents() {
 	try {
-		const response = await fetch("http://localhost:999/server/events");
+		const response = await fetch(`${DOMAIN_URL}/server/events`);
 
 		if (!response.ok) {
 			throw new Error("Could not fetch events");
@@ -701,8 +1161,6 @@ async function loadEvents() {
 		console.log("Events loaded:");
 		console.log(events);
 
-		await updateInterested();
-		
 		renderEvents();
 	} catch (err) {
 		console.error("Could not load events:", err.message);
@@ -713,6 +1171,29 @@ async function loadEvents() {
 
 let eventMarkers = [];
 let activeFilter = null;
+let currentUserType = null;
+let spotifyAudience = [];
+let audienceMarkers = [];
+let fanProfiles = JSON.parse(localStorage.getItem("liveNearFanProfiles") || "[]");
+
+// SVG location-pin icon for map markers
+function createPinIcon(color) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 38" width="28" height="38">
+    <filter id="ds" x="-30%" y="-10%" width="160%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.22"/>
+    </filter>
+    <path d="M14 0C6.268 0 0 6.268 0 14c0 5.25 2.88 9.84 7.14 12.33L14 38l6.86-11.67C25.12 23.84 28 19.25 28 14 28 6.268 21.732 0 14 0z"
+      fill="${color}" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" filter="url(#ds)"/>
+    <circle cx="14" cy="14" r="5.5" fill="white" opacity="0.92"/>
+  </svg>`;
+  return L.divIcon({
+    className: "",
+    html: svg,
+    iconSize:    [28, 38],
+    iconAnchor:  [14, 38],
+    popupAnchor: [0,  -40]
+  });
+}
 
 function getGenreIcon(genre) {
   const icons = {
@@ -739,17 +1220,17 @@ function renderEvents(filterNeighbourhood = null) {
 
   filtered.forEach(event => {
     const color = genreColors[event.genre] || "#6b7280";
-    const marker = L.circleMarker([event.lat, event.lng], {
-      radius: 10, fillColor: color, color: "white", weight: 2, fillOpacity: 0.9
-    }).addTo(map).bindPopup(`
-      <div class="event-popup">
-        <strong>${getGenreIcon(event.genre)} ${event.artistName}</strong><br>
-        <span style="color:${color}">${event.genre}</span><br>
-        📍 ${event.locationName}<br>🕐 ${event.time}<br>
-        👥 ${event.interested} interested<br>
-        ${event.liveLink !== "#" ? `<a href="${event.liveLink}" target="_blank">▶ Watch Live</a>` : ""}
-      </div>
-    `);
+    const marker = L.marker([event.lat, event.lng], { icon: createPinIcon(color) })
+      .addTo(map)
+      .bindPopup(`
+        <div class="event-popup">
+          <strong>${getGenreIcon(event.genre)} ${event.artistName}</strong><br>
+          <span style="color:${color}">${event.genre}</span><br>
+          📍 ${event.locationName}<br>🕐 ${event.time}<br>
+          👥 ${event.interested} interested<br>
+          ${event.liveLink !== "#" ? `<a href="${event.liveLink}" target="_blank">▶ Watch Live</a>` : ""}
+        </div>
+      `);
     eventMarkers.push(marker);
 
     const card = document.createElement("div");
@@ -767,6 +1248,7 @@ function renderEvents(filterNeighbourhood = null) {
       <p>🕐 ${event.time}</p>
       <p>👥 <span id="interest-${event.id}">${event.interested}</span> interested</p>
       <div class="event-actions">
+        <button class="interested-btn" onclick="addInterest(${event.id})" style="background:${color}">★ Interested</button>
         ${event.liveLink !== "#" ? `<a href="${event.liveLink}" target="_blank" class="watch-btn">▶ Live</a>` : ""}
       </div>`;
     eventList.appendChild(card);
@@ -788,7 +1270,14 @@ function clearEventFilter() {
   renderEvents();
 }
 
+function addInterest(eventId) {
+  const event = events.find(e => e.id === eventId);
+  if (event) { event.interested++; renderEvents(activeFilter); }
+}
+
+// ─────────────────────────────────────────────
 //  Create Event — geocodes via Nominatim
+// ─────────────────────────────────────────────
 async function addEvent() {
   const artistName   = document.getElementById("artistName").value.trim();
   const genre        = document.getElementById("genre").value.trim();
@@ -872,6 +1361,9 @@ async function addEventServer(eventData) {
 		formData.append("locationName", eventData.locationName);
 		formData.append("lat", String(eventData.lat));
 		formData.append("lng", String(eventData.lng));
+		if (eventData.time !== undefined) {
+			formData.append("time", String(eventData.time));
+		}
 
 		if (eventData.tags) {
 			formData.append("tags", JSON.stringify(eventData.tags));
@@ -911,7 +1403,21 @@ function showFormError(msg) {
   setTimeout(() => { el.style.display = "none"; }, 3000);
 }
 
+// ─────────────────────────────────────────────
+//  Minimize Create Panel
+// ─────────────────────────────────────────────
+function toggleCreatePanel() {
+  const body    = document.getElementById("createPanelBody");
+  const btn     = document.getElementById("minimizeCreateBtn");
+  const panel   = document.getElementById("createPanel");
+  const collapsed = body.classList.toggle("collapsed");
+  panel.classList.toggle("is-collapsed", collapsed);
+  btn.textContent = collapsed ? "+" : "−";
+}
+
+// ─────────────────────────────────────────────
 //  Genre Filter Tabs
+// ─────────────────────────────────────────────
 function renderGenreTabs() {
   const container = document.getElementById("genreTabs");
   const all = ["All", ...Object.keys(genreColors)];
@@ -935,131 +1441,462 @@ function filterByGenre(genre, btn) {
 // Genre select
 function populateGenreSelect() {
   const sel = document.getElementById("genre");
+  if (!sel || sel.tagName !== "SELECT") return;
   sel.innerHTML = `<option value="">Any Genre</option>` +
     Object.keys(genreColors).map(genre =>
       `<option value="${genre}">${genre}</option>`
     ).join("");
 }
 
-// Tracking
-const SEND_INTERVAL = 10000;
-let hasAccelerometer = true;
-let locationObtained = false;
-let motion = [];
-let lat = null;
-let lng = null;
-const uuid = crypto.randomUUID();
-async function startAccelerometer(callback) {
-    if (!isSecureContext) {
-        console.error("accelerometer: insecure context.");
-        hasAccelerometer = true;
-        return;
-    }
-    if ("Accelerometer" in window) {
-        hasAccelerometer = true;
-        const sensor = new Accelerometer({
-            frequency: 30
-        });
-        sensor.onreading = () => callback(sensor.x || 0, sensor.y || 0, sensor.z || 0);
-        sensor.onerror = e => {
-            console.error("accelerometer: " + e.error.message);
-            hasAccelerometer = false;
-        };
-        sensor.start();
-        return;
-    }
-    if ("DeviceMotionEvent" in window) {
-        if (DeviceMotionEvent.requestPermission)
-            if (await DeviceMotionEvent.requestPermission() !== "granted") {
-                hasAccelerometer = false;
-                return;
-            }
-
-        hasAccelerometer = true;
-        addEventListener("devicemotion", e => {
-            const a = e.accelerationIncludingGravity;
-            if (a) {
-                callback(a.x || 0, a.y || 0, a.z || 0);
-            }
-        });
-        return;
-    }
-    console.error("accelerometer: unsupported");
-    hasAccelerometer = false;
+// ─────────────────────────────────────────────
+//  Neighbourhood Select
+// ─────────────────────────────────────────────
+function populateNeighbourhoodSelect() {
+  const sel = document.getElementById("neighbourhoodSelect");
+  if (!sel) return;
+  sel.innerHTML = `<option value="">Select neighbourhood…</option>` +
+    neighbourhoods.map(n =>
+      `<option value="${n.name}">${n.name} (${n.topGenre})</option>`
+    ).join("");
 }
 
-function onAccelerometer(x, y, z) {
-    const magnitude = Math.sqrt(x * x + y * y + z * z);
+// ─────────────────────────────────────────────
+//  Login + Spotify Audience
+// ─────────────────────────────────────────────
+function loginAs(type) {
+  // Toggle off if already active
+  if (currentUserType === type) {
+    closePanel(type);
+    return;
+  }
+  currentUserType = type;
+  const creatorPanel = document.getElementById("creatorPanel");
+  const fanPanel     = document.getElementById("fanPanel");
+  const fanBtn       = document.getElementById("fanLoginBtn");
+  const creatorBtn   = document.getElementById("creatorLoginBtn");
 
-    motion.push(magnitude);
-
-    if (motion.length > 30) {
-        motion.shift();
-    }
+  if (creatorPanel) creatorPanel.style.display = type === "creator" ? "block" : "none";
+  if (fanPanel)     fanPanel.style.display     = type === "fan"     ? "block" : "none";
+  if (fanBtn)       fanBtn.classList.toggle("active",     type === "fan");
+  if (creatorBtn)   creatorBtn.classList.toggle("active", type === "creator");
 }
 
-function startLocation() {
-    if (!navigator.geolocation) {
-        console.error("geolocation: unsupported");
-        return;
-    }
-
-    navigator.geolocation.watchPosition(
-        pos => {
-            lat = pos.coords.latitude;
-            lng = pos.coords.longitude;
-            console.log("LOC: " + lat + " " + lng);
-            locationObtained = true;
-        },
-        err => console.error(err), {
-            enableHighAccuracy: true,
-            maximumAge: 0,
-        }
-    );
-}
-async function sendMotion(debug = false) {
-    if (!debug && (!hasAccelerometer || !locationObtained || motion.length < 30)) return;
-    await fetch("/server/motion", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            lat,
-            lng,
-            motion,
-            deviceId: uuid
-        })
-    });
+function closePanel(type) {
+  currentUserType = null;
+  const panel = document.getElementById(type === "fan" ? "fanPanel" : "creatorPanel");
+  const btn   = document.getElementById(type === "fan" ? "fanLoginBtn" : "creatorLoginBtn");
+  if (panel) panel.style.display = "none";
+  if (btn)   btn.classList.remove("active");
 }
 
-async function updateInterested() {
-	for (const event of events) {
-		event.interested = 1;
-	}
+function connectSpotifyAudience() {
+  const artistLink = document.getElementById("spotifyArtistLink").value.trim();
+  const rawText    = document.getElementById("spotifyCities").value.trim();
+  const result     = document.getElementById("spotifyResult");
+
+  if (!rawText) { result.innerHTML = "Paste city data first, example: Montreal, 4200"; return; }
+
+  spotifyAudience = rawText.split("\n").map(line => {
+    const parts = line.split(",");
+    if (parts.length < 2) return null;
+    return { city: parts[0].trim(), listeners: Number(parts[1].trim()) };
+  }).filter(item => item && item.city && !Number.isNaN(item.listeners));
+
+  if (spotifyAudience.length === 0) { result.innerHTML = "No valid Spotify audience data found."; return; }
+
+  result.innerHTML = `
+    <strong>Audience imported${artistLink ? " from Spotify link" : ""}:</strong>
+    ${spotifyAudience.map(item => `
+      <div class="audience-city">
+        <span>${item.city}</span>
+        <strong>${item.listeners} listeners</strong>
+      </div>`).join("")}`;
+
+  renderSpotifyAudienceMap();
 }
 
-function initTracking() {
-    startAccelerometer(onAccelerometer);
-    startLocation();
-    setInterval(sendMotion, SEND_INTERVAL);
-	setInterval(async function() {
-		await updateInterested();
-		renderEvents(activeFilter);
-	}, SEND_INTERVAL);
+function renderSpotifyAudienceMap() {
+  audienceMarkers.forEach(m => map.removeLayer(m));
+  audienceMarkers = [];
+
+  const cityCoords = {
+    "Montreal":    [45.5017, -73.5673],
+    "Laval":       [45.6066, -73.7124],
+    "Longueuil":   [45.5369, -73.5107],
+    "Brossard":    [45.4501, -73.4658],
+    "Terrebonne":  [45.7000, -73.6473],
+    "Repentigny":  [45.7422, -73.4501],
+    "Quebec City": [46.8139, -71.2080],
+    "Québec":      [46.8139, -71.2080],
+    "Ottawa":      [45.4215, -75.6972],
+    "Toronto":     [43.6532, -79.3832]
+  };
+
+  const maxListeners = Math.max(...spotifyAudience.map(i => i.listeners));
+
+  for (const item of spotifyAudience) {
+    const coords = cityCoords[item.city];
+    if (!coords) { console.warn("Unknown city:", item.city); continue; }
+    const radius = 400 + (item.listeners / maxListeners) * 2200;
+    const circle = L.circle(coords, {
+      radius, color: "#1db954", fillColor: "#1db954", fillOpacity: 0.25, weight: 2
+    }).addTo(map).bindPopup(`
+      <div class="event-popup">
+        <strong>🎧 Spotify Audience Estimate</strong><br>
+        📍 ${item.city}<br>
+        👥 ${item.listeners} listeners<br>
+        <small>Approximate city-level fan demand.</small>
+      </div>`);
+    audienceMarkers.push(circle);
+  }
+
+  if (audienceMarkers.length > 0) {
+    map.fitBounds(L.featureGroup(audienceMarkers).getBounds(), { padding: [40, 40] });
+  }
 }
 
-// Init
+function saveFanProfile() {
+  const name       = document.getElementById("fanName").value.trim();
+  const postalCode = document.getElementById("fanPostalCode").value.trim().toUpperCase();
+  const genre      = document.getElementById("fanGenre").value.trim();
+
+  if (!name || !postalCode || !genre) {
+    alert("Please fill in your name, postal code, and favourite genre.");
+    return;
+  }
+
+  fanProfiles.push({ id: Date.now(), name, postalCode, genre });
+  localStorage.setItem("liveNearFanProfiles", JSON.stringify(fanProfiles));
+
+  document.getElementById("fanName").value       = "";
+  document.getElementById("fanPostalCode").value = "";
+  document.getElementById("fanGenre").value      = "";
+
+  alert("Fan profile saved. Creators can use this as approximate demand data.");
+}
+
+// ═════════════════════════════════════════════
+//  Artist Finder — Modal UI
+// ═════════════════════════════════════════════
+function openFinderModal() {
+  initFinderGenreChips();
+  document.getElementById("finderModal").style.display = "flex";
+  showFinderForm();
+  document.body.style.overflow = "hidden";
+}
+
+function closeFinderModal() {
+  document.getElementById("finderModal").style.display = "none";
+  document.body.style.overflow = "";
+}
+
+function handleFinderOverlayClick(e) {
+  if (e.target === document.getElementById("finderModal")) closeFinderModal();
+}
+
+function showFinderForm() {
+  document.getElementById("finderForm").style.display    = "block";
+  document.getElementById("finderResults").style.display = "none";
+  document.getElementById("finderError").style.display   = "none";
+}
+
+function initFinderGenreChips() {
+  const container = document.getElementById("finderGenreChips");
+  if (container.children.length > 0) return;
+  container.innerHTML = Object.entries(genreColors).map(([g, c]) => `
+    <button class="finder-chip" data-genre="${g}"
+      style="--chip-color:${c}"
+      onclick="this.classList.toggle('selected')">
+      ${getGenreIcon(g)} ${g}
+    </button>`).join("");
+}
+
+// ─────────────────────────────────────────────
+//  Scoring Algorithm
+// ─────────────────────────────────────────────
+function scoreNeighbourhood(n, inputs) {
+  const meta = neighbourhoodMeta[n.name];
+  if (!meta) return null;
+
+  // 1. Genre match  — 0–40 pts
+  let genreRaw = 50; // neutral if no genre selected
+  if (inputs.genres.length > 0) {
+    genreRaw = inputs.genres.reduce((sum, g) => sum + (n.genres[g] || 0), 0) / inputs.genres.length;
+  }
+  const genreScore = Math.round((genreRaw / 100) * 40);
+
+  // 2. Venue / setting fit — 0–30 pts
+  let venueScore = 0;
+  switch (inputs.performanceType) {
+    case "street":
+      venueScore = meta.footTraffic * 7 + meta.streetFriendly * 3;
+      break;
+    case "park":
+      venueScore = meta.parkAccess * 7 + (meta.footTraffic >= 2 ? 9 : 0);
+      break;
+    case "bar_cafe":
+      venueScore = meta.venueQuality * 7 + (meta.footTraffic >= 2 ? 9 : 0);
+      break;
+    case "concert_hall":
+      venueScore = meta.venueQuality * 10;
+      break;
+    case "community":
+      venueScore = 10 + Math.min(10, Math.round(meta.population / 15)) + (meta.footTraffic >= 2 ? 10 : 0);
+      break;
+    case "festival":
+      venueScore = meta.footTraffic * 5 + meta.parkAccess * 5 + (meta.vibeScore >= 7 ? 10 : 0);
+      break;
+    default:
+      venueScore = 15;
+  }
+  venueScore = Math.min(30, Math.round(venueScore));
+
+  // 3. Audience size fit — 0–20 pts
+  const ticketed = inputs.performanceType === "concert_hall" || inputs.performanceType === "community";
+  let audienceScore = 0;
+  switch (inputs.crowdSize) {
+    case "solo":
+      audienceScore = 14 + meta.footTraffic * 2;
+      break;
+    case "small":
+      audienceScore = 8 + meta.footTraffic * 4;
+      break;
+    case "medium":
+      if (ticketed) {
+        audienceScore = (meta.venueQuality >= 2 ? 8 : 3) + (meta.population > 80 ? 7 : 0) + (meta.population > 130 ? 5 : 0);
+      } else {
+        audienceScore = meta.footTraffic * 4 + (meta.venueQuality >= 2 ? 4 : 0) + (meta.population > 80 ? 6 : 0) + (meta.population > 130 ? 6 : 0);
+      }
+      break;
+    case "large":
+      if (ticketed) {
+        audienceScore = (meta.venueQuality === 3 ? 12 : meta.venueQuality === 2 ? 6 : 0) + (meta.population > 80 ? 5 : 0) + (meta.population > 130 ? 3 : 0);
+      } else {
+        audienceScore = meta.footTraffic * 4 + (meta.venueQuality === 3 ? 6 : meta.venueQuality === 2 ? 3 : 0) + (meta.population > 80 ? 4 : 0) + (meta.population > 130 ? 3 : 0);
+      }
+      break;
+    default:
+      audienceScore = 10;
+  }
+  audienceScore = Math.min(20, Math.round(audienceScore));
+
+  // 4. Arts scene vibe — 0–10 pts
+  const vibeScore = Math.min(10, meta.vibeScore);
+
+  // 5. Experience bonus — 0–5 pts
+  let expBonus = 0;
+  if (inputs.experience === "beginner") {
+    expBonus = (meta.streetFriendly >= 2 ? 2 : 0) + (meta.footTraffic >= 2 ? 2 : 0) + (meta.vibeScore >= 6 ? 1 : 0);
+  } else if (inputs.experience === "professional") {
+    expBonus = meta.venueQuality === 3 ? 5 : meta.venueQuality === 2 ? 2 : 0;
+  } else {
+    expBonus = (meta.venueQuality >= 2 ? 2 : 0) + (meta.vibeScore >= 5 ? 1 : 0);
+  }
+  expBonus = Math.min(5, expBonus);
+
+  const total = Math.min(100, genreScore + venueScore + audienceScore + vibeScore + expBonus);
+  return { total, genreScore, venueScore, audienceScore, vibeScore, expBonus };
+}
+
+// ─────────────────────────────────────────────
+//  Reason generation
+// ─────────────────────────────────────────────
+function buildReasons(n, meta, inputs) {
+  const reasons = [];
+
+  const genreMatches = inputs.genres
+    .map(g => ({ genre: g, pct: n.genres[g] || 0 }))
+    .filter(x => x.pct > 0)
+    .sort((a, b) => b.pct - a.pct);
+
+  if (genreMatches.length > 0) {
+    const top = genreMatches[0];
+    if (top.pct >= 30)      reasons.push(`${top.pct}% of residents actively listen to ${top.genre} — dominant local genre`);
+    else if (top.pct >= 15) reasons.push(`${top.pct}% local audience enjoys ${top.genre} — solid built-in fan base`);
+    else                    reasons.push(`${top.pct}% ${top.genre} listeners here — niche but passionate crowd`);
+  } else if (inputs.genres.length === 0) {
+    reasons.push("Broad audience open to all genres — great for experimental sets");
+  } else {
+    reasons.push("Eclectic audience — open to discovering new sounds");
+  }
+
+  const traffic = ["", "low foot traffic", "moderate foot traffic", "high foot traffic"][meta.footTraffic];
+  switch (inputs.performanceType) {
+    case "street":
+      if (meta.streetFriendly === 3) reasons.push("Strong street performance culture — buskers are common and welcomed here");
+      else if (meta.streetFriendly === 2) reasons.push(`${traffic} along commercial strips — decent busking exposure`);
+      else reasons.push("Limited street performance spots — aim for the main commercial street");
+      break;
+    case "park":
+      if (meta.parkAccess === 3) reasons.push("Excellent outdoor spaces — parks here regularly host live performances");
+      else reasons.push("Parks available for outdoor sets — check permit requirements");
+      break;
+    case "bar_cafe":
+      if (n.venues && n.venues.length > 0) reasons.push(`Known live music venues: ${n.venues.slice(0, 2).join(", ")}`);
+      else reasons.push("Bar and café scene active — reach out to local spots for a slot");
+      break;
+    case "concert_hall":
+      if (meta.venueQuality === 3) reasons.push(`Premier stages available: ${n.venues ? n.venues.slice(0, 2).join(", ") : ""}`);
+      else if (meta.venueQuality === 2) reasons.push(`Mid-size venues: ${n.venues ? n.venues.join(", ") : ""}`);
+      else reasons.push("Limited dedicated concert halls — community halls fill the gap");
+      break;
+    case "community":
+      reasons.push(`Maison de la culture serves ~${meta.population}k local residents — captive community audience`);
+      break;
+    case "festival":
+      if (meta.vibeScore >= 8) reasons.push("One of Montréal's top festival destinations — major events pass through here");
+      else if (meta.vibeScore >= 5) reasons.push("Active outdoor event scene — neighbourhood festivals run May–September");
+      else reasons.push("Quieter festival scene — good for smaller local events");
+      break;
+  }
+
+  if (inputs.crowdSize === "large") {
+    if (meta.footTraffic === 3) reasons.push("Maximum foot traffic in Montréal — best area to draw 200+ people");
+    else if (meta.population > 130) reasons.push(`~${meta.population}k residents — large local population to draw from`);
+    else reasons.push(`Population of ~${meta.population}k — promote ahead to fill a large crowd`);
+  } else if (inputs.crowdSize === "medium" && meta.footTraffic >= 2) {
+    reasons.push(`${traffic} — supports organic crowds of 50–200 without heavy promotion`);
+  }
+
+  if (meta.vibeScore >= 9) reasons.push("Montréal's #1 live music destination — every artist performs here eventually");
+  else if (meta.vibeScore >= 7) reasons.push("Thriving arts scene with year-round live events and industry presence");
+  else if (meta.vibeScore >= 5) reasons.push("Growing arts community — great for building a loyal local following");
+
+  return reasons.slice(0, 3);
+}
+
+// ─────────────────────────────────────────────
+//  Run the Finder
+// ─────────────────────────────────────────────
+function runFinderAlgorithm() {
+  const genres = [...document.querySelectorAll(".finder-chip.selected")].map(el => el.dataset.genre);
+  const crowdEl = document.querySelector("input[name='finderCrowd']:checked");
+  const venueEl = document.querySelector("input[name='finderVenue']:checked");
+  const expEl   = document.querySelector("input[name='finderExp']:checked");
+
+  if (!crowdEl || !venueEl || !expEl) {
+    const err = document.getElementById("finderError");
+    err.textContent = "Please answer all three questions to continue.";
+    err.style.display = "block";
+    return;
+  }
+
+  const inputs = {
+    genres:          genres,
+    crowdSize:       crowdEl.value,
+    performanceType: venueEl.value,
+    experience:      expEl.value
+  };
+
+  const scored = neighbourhoods
+    .map(n => {
+      const scores = scoreNeighbourhood(n, inputs);
+      return scores ? { n, scores } : null;
+    })
+    .filter(Boolean)
+    .sort((a, b) => b.scores.total - a.scores.total)
+    .slice(0, 3);
+
+  renderFinderResults(scored, inputs);
+}
+
+// ─────────────────────────────────────────────
+//  Render Results
+// ─────────────────────────────────────────────
+function renderFinderResults(ranked, inputs) {
+  const venueLabels = {
+    street:       "Street / Busking",
+    park:         "Park / Outdoor",
+    bar_cafe:     "Bar & Café",
+    concert_hall: "Concert Hall",
+    community:    "Community Center",
+    festival:     "Festival / Event"
+  };
+  const crowdLabels = {
+    solo:   "intimate", small: "small crowd (<50)",
+    medium: "medium crowd (50–200)", large: "large crowd (200+)"
+  };
+
+  const sub = [
+    inputs.genres.length > 0 ? `${inputs.genres.join(" & ")} · ` : "",
+    `${venueLabels[inputs.performanceType]} · ${crowdLabels[inputs.crowdSize]}`
+  ].join("");
+
+  document.getElementById("finderResultsSub").textContent = sub;
+
+  const rankColors = ["#f59e0b", "#64748b", "#b45309"];
+  const rankLabels = ["#1", "#2", "#3"];
+
+  const list = document.getElementById("finderResultsList");
+  list.innerHTML = ranked.map(({ n, scores }, i) => {
+    const meta     = neighbourhoodMeta[n.name];
+    const color    = genreColors[n.topGenre];
+    const reasons  = buildReasons(n, meta, inputs);
+    const spots    = (meta.hotspots[inputs.performanceType] || meta.hotspots.street).slice(0, 2);
+    const pct      = scores.total;
+
+    const reasonsHtml = reasons.map(r => `<li>${r}</li>`).join("");
+    const spotsHtml   = spots.map(s => `<div class="result-address-spot">${s}</div>`).join("");
+
+    return `
+      <div class="result-card rank-${i+1}">
+        <div class="result-top">
+          <div class="result-rank-badge">${rankLabels[i]}</div>
+          <div class="result-info">
+            <div class="result-name">${n.name}</div>
+            <div class="result-score-row">
+              <div class="result-score-bg">
+                <div class="result-score-fill" style="width:${pct}%"></div>
+              </div>
+              <span class="result-score-num" style="color:${rankColors[i]}">${pct}%</span>
+            </div>
+          </div>
+          <span style="background:${color};color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;white-space:nowrap;flex-shrink:0;align-self:flex-start;margin-top:4px">${n.topGenre}</span>
+        </div>
+
+        <ul class="result-reasons">${reasonsHtml}</ul>
+
+        <div class="result-address">
+          <div class="result-address-label">Recommended spots</div>
+          ${spotsHtml}
+        </div>
+
+        <button class="result-explore-btn"
+          onclick="exploreFromFinder('${n.name}')">
+          Explore ${n.name} on Map →
+        </button>
+      </div>`;
+  }).join("");
+
+  document.getElementById("finderForm").style.display    = "none";
+  document.getElementById("finderResults").style.display = "block";
+}
+
+function exploreFromFinder(name) {
+  closeFinderModal();
+  const n = neighbourhoods.find(x => x.name === name);
+  if (!n) return;
+  map.flyTo(n.center, 13, { duration: 1 });
+  setTimeout(() => selectNeighbourhood(n), 900);
+}
+
+// ─────────────────────────────────────────────
+//  Init
+// ─────────────────────────────────────────────
 async function init() {
-  initTracking();
   await loadEvents();
-  updateNeighborhoodsStats();	
+  updateNeighborhoodsStats();
   drawNeighbourhoodZones();
   renderNeighbourhoodList();
   renderLegend();
   renderEvents();
   renderGenreTabs();
   populateGenreSelect();
+  populateNeighbourhoodSelect();
 }
 
 init();
+
+document.getElementById("fanLoginBtn")?.addEventListener("click", () => loginAs("fan"));
+document.getElementById("creatorLoginBtn")?.addEventListener("click", () => loginAs("creator"));
+document.getElementById("saveFanBtn")?.addEventListener("click", saveFanProfile);

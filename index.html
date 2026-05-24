@@ -13,8 +13,14 @@
 
   <header>
     <div class="header-inner">
-      <div class="logo">🎵 LiveNear</div>
-      <div class="header-sub">Montreal Music Taste Map — Find where to perform</div>
+      <div>
+        <div class="logo">🎵 LiveNear</div>
+        <div class="header-sub">Montreal Music Taste Map — Find where to perform</div>
+      </div>
+      <div class="auth-actions">
+        <button id="fanLoginBtn" class="login-btn fan-login" type="button">Fan Login</button>
+        <button id="creatorLoginBtn" class="login-btn creator-login" type="button">Creator Login</button>
+      </div>
     </div>
   </header>
 
@@ -26,6 +32,14 @@
 
     <!-- LEFT: Neighbourhood list -->
     <aside class="sidebar left-sidebar">
+      <button class="find-stage-btn" onclick="openFinderModal()">
+        <span class="find-stage-icon">🎸</span>
+        <span class="find-stage-text">
+          <span class="find-stage-label">Find Your Stage</span>
+          <span class="find-stage-sub">Personalized venue matcher</span>
+        </span>
+        <span class="find-stage-arrow">→</span>
+      </button>
       <div class="sidebar-title">
         <span>🗺 Neighbourhoods</span>
         <span class="sidebar-hint">Click to explore</span>
@@ -40,24 +54,59 @@
     <!-- CENTER: Map -->
     <section class="map-section">
       <div id="map"></div>
+      <button id="toggleZonesBtn" class="toggle-zones-btn" onclick="toggleZones()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        Hide Zones
+      </button>
       <div id="neighbourhoodDetail" class="neighbourhood-detail"></div>
     </section>
 
-    <!-- RIGHT: Create event + Event list -->
+    <!-- RIGHT: Panels + Event list -->
     <aside class="sidebar right-sidebar">
 
-      <div class="panel create-panel">
-        <div class="panel-title">🎤 Create Performance</div>
-        <div id="formError" class="form-error"></div>
-        <input id="artistName" type="text" placeholder="Artist name" />
-        <select id="genre"></select>
-        <input id="locationName" type="text" placeholder="Location *" />
-        <input id="time" type="datetime-local" required />
-        <input id="liveLink" type="text" placeholder="Livestream link (optional)" />
-        <button class="create-btn" onclick="addEvent()">Create Event</button>
-        <p class="hint">The venue name is geocoded — enter a real Montreal address or place name for an exact pin.</p>
+      <!-- Creator Panel (Spotify Audience) -->
+      <div id="creatorPanel" class="panel creator-panel" style="display:none">
+        <div class="panel-title">
+          <span>🎧 Creator Audience</span>
+          <button class="minimize-btn" onclick="closePanel('creator')" title="Close">✕</button>
+        </div>
+        <p class="hint">Enter your Spotify for Artists link to track where your fans are located.</p>
+        <input id="spotifyArtistLink" type="text" placeholder="Spotify artist link (optional)" />
+        <div id="spotifyResult" class="spotify-result"></div>
       </div>
 
+      <!-- Fan Panel -->
+      <div id="fanPanel" class="panel fan-panel" style="display:none">
+        <div class="panel-title">
+          <span>👥 Fan Profile</span>
+          <button class="minimize-btn" onclick="closePanel('fan')" title="Close">✕</button>
+        </div>
+        <input id="fanName" type="text" placeholder="Your name" />
+        <input id="fanPostalCode" type="text" placeholder="Postal code, example H3G" />
+        <input id="fanGenre" type="text" placeholder="Favourite genre" />
+        <button id="saveFanBtn" class="create-btn" type="button">Save Fan Profile</button>
+        <p class="hint">Fan data is used as an approximate area only, not an exact address.</p>
+      </div>
+
+      <!-- Create Performance Panel -->
+      <div class="panel create-panel" id="createPanel">
+        <div class="panel-title">
+          <span>🎤 Create Performance</span>
+          <button class="minimize-btn" id="minimizeCreateBtn" onclick="toggleCreatePanel()" title="Minimize">−</button>
+        </div>
+        <div id="createPanelBody">
+          <div id="formError" class="form-error"></div>
+          <input id="artistName" type="text" placeholder="Artist name" />
+          <select id="genre"></select>
+          <input id="locationName" type="text" placeholder="Location *" />
+          <input id="time" type="datetime-local" required />
+          <input id="liveLink" type="text" placeholder="Livestream link (optional)" />
+          <button class="create-btn" onclick="addEvent()">Create Event</button>
+          <p class="hint">The venue name is geocoded — enter a real Montreal address or place name for an exact pin.</p>
+        </div>
+      </div>
+
+      <!-- Events Panel -->
       <div id="eventsPanel" class="panel events-panel">
         <div class="panel-title">
           <span id="eventsTitle">Live Events</span>
@@ -69,6 +118,113 @@
     </aside>
 
   </main>
+
+  <!-- ── Artist Finder Modal ── -->
+  <div id="finderModal" class="finder-overlay" style="display:none" onclick="handleFinderOverlayClick(event)">
+    <div class="finder-modal">
+
+      <div class="finder-header">
+        <div>
+          <div class="finder-title">🎸 Find Your Stage</div>
+          <div class="finder-subtitle">Tell us about your act — we'll match you with the best Montreal spots</div>
+        </div>
+        <button class="finder-close" onclick="closeFinderModal()">✕</button>
+      </div>
+
+      <div id="finderForm" class="finder-body">
+        <!-- Q1: Genres -->
+        <div class="finder-q">
+          <div class="finder-q-title">What genre(s) do you play?</div>
+          <div class="finder-q-sub">Select all that apply — you can pick multiple</div>
+          <div id="finderGenreChips" class="finder-chips"></div>
+        </div>
+
+        <!-- Q2: Crowd size -->
+        <div class="finder-q">
+          <div class="finder-q-title">How many people are you hoping to attract?</div>
+          <div class="finder-crowd-grid">
+            <label class="finder-radio-card">
+              <input type="radio" name="finderCrowd" value="solo">
+              <div class="radio-card-inner"><span class="radio-card-icon">🎙</span><span class="radio-card-label">Intimate</span><span class="radio-card-desc">Just me + passers-by</span></div>
+            </label>
+            <label class="finder-radio-card">
+              <input type="radio" name="finderCrowd" value="small">
+              <div class="radio-card-inner"><span class="radio-card-icon">👥</span><span class="radio-card-label">Small</span><span class="radio-card-desc">Up to 50 people</span></div>
+            </label>
+            <label class="finder-radio-card">
+              <input type="radio" name="finderCrowd" value="medium">
+              <div class="radio-card-inner"><span class="radio-card-icon">🎟</span><span class="radio-card-label">Medium</span><span class="radio-card-desc">50–200 people</span></div>
+            </label>
+            <label class="finder-radio-card">
+              <input type="radio" name="finderCrowd" value="large">
+              <div class="radio-card-inner"><span class="radio-card-icon">🏟</span><span class="radio-card-label">Large</span><span class="radio-card-desc">200+ people</span></div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q3: Performance setting -->
+        <div class="finder-q">
+          <div class="finder-q-title">Where are you hoping to perform?</div>
+          <div class="finder-venue-grid">
+            <label class="finder-radio-card">
+              <input type="radio" name="finderVenue" value="street">
+              <div class="radio-card-inner"><span class="radio-card-icon">🎸</span><span class="radio-card-label">Street / Busking</span><span class="radio-card-desc">Sidewalks, metro exits</span></div>
+            </label>
+            <label class="finder-radio-card">
+              <input type="radio" name="finderVenue" value="park">
+              <div class="radio-card-inner"><span class="radio-card-icon">🌳</span><span class="radio-card-label">Park / Outdoor</span><span class="radio-card-desc">Parks, plazas, outdoor stages</span></div>
+            </label>
+            <label class="finder-radio-card">
+              <input type="radio" name="finderVenue" value="bar_cafe">
+              <div class="radio-card-inner"><span class="radio-card-icon">🍺</span><span class="radio-card-label">Bar / Café</span><span class="radio-card-desc">Intimate licensed venues</span></div>
+            </label>
+            <label class="finder-radio-card">
+              <input type="radio" name="finderVenue" value="concert_hall">
+              <div class="radio-card-inner"><span class="radio-card-icon">🎭</span><span class="radio-card-label">Concert Hall</span><span class="radio-card-desc">Professional stages</span></div>
+            </label>
+            <label class="finder-radio-card">
+              <input type="radio" name="finderVenue" value="community">
+              <div class="radio-card-inner"><span class="radio-card-icon">🏫</span><span class="radio-card-label">Community Center</span><span class="radio-card-desc">Maisons de la culture</span></div>
+            </label>
+            <label class="finder-radio-card">
+              <input type="radio" name="finderVenue" value="festival">
+              <div class="radio-card-inner"><span class="radio-card-icon">🎪</span><span class="radio-card-label">Festival / Event</span><span class="radio-card-desc">Outdoor festivals</span></div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q4: Experience -->
+        <div class="finder-q">
+          <div class="finder-q-title">What's your experience level?</div>
+          <div class="finder-exp-grid">
+            <label class="finder-radio-card">
+              <input type="radio" name="finderExp" value="beginner">
+              <div class="radio-card-inner"><span class="radio-card-icon">🌱</span><span class="radio-card-label">Emerging</span><span class="radio-card-desc">Building my audience</span></div>
+            </label>
+            <label class="finder-radio-card">
+              <input type="radio" name="finderExp" value="intermediate">
+              <div class="radio-card-inner"><span class="radio-card-icon">⭐</span><span class="radio-card-label">Established</span><span class="radio-card-desc">Regular performer</span></div>
+            </label>
+            <label class="finder-radio-card">
+              <input type="radio" name="finderExp" value="professional">
+              <div class="radio-card-inner"><span class="radio-card-icon">🏆</span><span class="radio-card-label">Professional</span><span class="radio-card-desc">Seasoned artist</span></div>
+            </label>
+          </div>
+        </div>
+
+        <div id="finderError" class="finder-error" style="display:none"></div>
+        <button class="finder-submit" onclick="runFinderAlgorithm()">Find My Stage →</button>
+      </div>
+
+      <div id="finderResults" class="finder-body" style="display:none">
+        <button class="finder-back" onclick="showFinderForm()">← Change answers</button>
+        <div class="finder-results-title">Your Top Spots in Montréal</div>
+        <div class="finder-results-sub" id="finderResultsSub"></div>
+        <div id="finderResultsList"></div>
+      </div>
+
+    </div>
+  </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="app.js"></script>
