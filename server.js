@@ -139,7 +139,7 @@ function parseMultipart(req) {
 
 		req.on("end", () => {
 			const boundary = `--${boundaryValue}`;
-			const body = Buffer.concat(chunks).toString("binary");
+			const body = Buffer.concat(chunks).toString("utf8");
 			const parts = body.split(boundary);
 
 			const fields = {};
