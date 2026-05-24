@@ -18,12 +18,11 @@ The processed data was visualized dynamically on a live city map, allowing areas
 
 The system uses smartphone accelerometers to capture motion data from audience members during live performances. By measuring changes in acceleration over time, the platform detects rhythmic movement patterns such as people nodding, shaking their phones, or moving along with the music.
 These motion sequences are analyzed in real time to estimate how synchronized the audience is at a specific location. Similar movement patterns between devices are grouped together using time-series similarity analysis and clustering techniques.
-The platform then calculates a crowd energy score based on three factors: the number of participants, the intensity of movement, and the degree of synchronization between audience members. As a result, locations where many people move together in rhythm appear as stronger and more active performance spots on the map.
+The platform then calculates a popularity score based on three factors: the audience size, the intensity of movement, and the degree of synchronization between audience members. (Though there needs to be >2 people.) Locations where many people move together in rhythm have a higher score, and this reflects the popularity of the nearest event.
 
 ### GPS
 
-The platform also uses smartphone GPS data to automatically determine where audience activity is happening. Each motion sequence is associated with a geographic location, allowing the system to map synchronized crowd activity to specific places in the city.
-This allows audience engagement to be visualized geographically in real time without requiring manual check-ins from users.
+The platform uses smartphone GPS data to automatically determine where audience activity is happening, with each motion sequence being associated to an event (within 200 meters, calculated by latitude and longitude). This allows audience engagement to be measured in real time without explicit indication from users (so nothing like upvotes).
 
 ## Demo
 
