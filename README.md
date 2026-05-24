@@ -24,7 +24,18 @@ The platform then calculates a popularity score based on three factors: the audi
 
 The platform uses smartphone GPS data to automatically determine where audience activity is happening, with each motion sequence being associated to an event (within 200 meters, calculated by latitude and longitude). This allows audience engagement to be measured in real time without explicit indication from users (so nothing like upvotes).
 
-## Demo
-
 ## Tech Stack
+
+### Frontend
+
+- HTML / CSS / JavaScript
+
+### Backend
+
+- Express.js
+
+- Python (for motion analysis)
+- NumPy
+- dtaidistance (DTW)
+- scikit-learn (DBSCAN)
 
