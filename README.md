@@ -9,7 +9,8 @@ Over time, the accumulated interaction data can also help artists understand whi
 
 The main technical challenge is estimating real-time audience engagement from noisy smartphone motion data.
 The project needs to distinguish natural audience movement from unrelated motion, while aggregating synchronized movement from many devices in real time. This requires processing accelerometer data, detecting collective rhythmic patterns, and visualizing crowd energy dynamically on a live city map.
-To analyze collective rhythmic behavior, the project used Dynamic Time Warping (DTW) to compare motion patterns between audience members, even when their movements were slightly out of sync. DBSCAN was then applied to the DTW distance matrix to group devices with similar motion patterns.
+To analyze collective rhythmic behavior, the project used Dynamic Time Warping (DTW) to compare motion patterns between audience members, even when their movements were slightly out of sync. Simple Euclidean distance was not suitable because audience motion data can contain slight timing differences caused by sensor sampling inconsistencies, network latency, or natural human reaction delays.
+DBSCAN was then applied to the DTW distance matrix to group devices with similar motion patterns. DBSCAN was chosen because the number of synchronized groups was unknown in advance, and unrelated motion needed to be filtered out as noise. Unlike methods such as K-means, DBSCAN can identify dense groups of similar motion patterns while ignoring isolated movements.
 The processed data was visualized dynamically on a live city map, allowing areas with strong synchronized audience reactions to appear more prominently in real time. Over time, accumulated interaction data also provided artists with insights into which locations, times, and performance styles generated the strongest audience engagement.
 
 ## Mobile-specific Features
