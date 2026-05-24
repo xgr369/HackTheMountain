@@ -17,8 +17,8 @@ const PORT = process.env.PORT || 999;
 const EVENTS_DIR = path.join(__dirname, "storage", "events");
 const UPLOADS_DIR = path.join(__dirname, "storage", "uploads");
 
-const MOTION_EVENT_RANGE = 50;
-const MOTION_WINDOW_MS = 30_000;
+const MOTION_EVENT_RANGE = 200;
+const MOTION_WINDOW_MS = 120_000;
 const motionByEvent = {};
 
 app.use("/uploads", express.static(UPLOADS_DIR));
@@ -362,7 +362,7 @@ app.post("/server/editevent/:key", asyncRoute(async (req, res) => {
 }));
 
 app.post("/server/motion", asyncRoute(async (req, res) => {
-	console.log("MOTIONTEST");
+	console.log("POST motion");
 	const { lat, lng, motion, deviceId } = req.body;
 
 	if (lat === undefined || lng === undefined || !motion || !deviceId) {
@@ -403,7 +403,6 @@ app.get("/server/motiontest", asyncRoute(async (req, res) => {
 		motion
 	}));
 
-		console.log(key + " " + devices.length);
 	if (!devices.length) {
 		return ok(res, { exists: false });
 	}
@@ -419,30 +418,30 @@ app.get("/server/motiontest", asyncRoute(async (req, res) => {
 }));
 
 app.get("/server/getscores", asyncRoute(async (req, res) => {
+	console.log("GET getscores");
 	cleanupMotion();
 
 	const events = await getUpcomingEvents();
 
-	const scores = await Promise.all(events.map(async event => {
+	const scoreEntries = await Promise.all(events.map(async event => {
 		const devices = Object.values(motionByEvent[event.key] || {}).map(({ deviceId, motion }) => ({
 			deviceId,
 			motion
 		}));
-		console.log(event.key + " " + devices.length);
 
 		if (!devices.length) {
-			return { key: event.key, score: 0 };
+			return [event.key, 0];
 		}
-		
+		console.log(devices);
 		try {
 			const result = await runMotionScore({ event_key: event.key, devices });
-			return { key: event.key, score: result.score || 0 };
+			return [event.key, result.score || 0];
 		} catch {
-			return { key: event.key, score: 0 };
+			return [event.key, 0];
 		}
 	}));
 
-	ok(res, scores);
+	ok(res, Object.fromEntries(scoreEntries));
 }));
 
 // DBG
