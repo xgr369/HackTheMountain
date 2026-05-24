@@ -493,6 +493,21 @@ input:focus, select:focus {
 
 .event-card:hover { box-shadow: var(--shadow); }
 
+.event-card,
+.pin {
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.event-card:hover {
+    transform: translateY(-2px);
+}
+
+.pin {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+}
+
 .event-card-top {
   display: flex; align-items: flex-start; gap: 10px; margin-bottom: 7px;
 }

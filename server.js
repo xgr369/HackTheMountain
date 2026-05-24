@@ -388,33 +388,32 @@ app.post("/server/motion", asyncRoute(async (req, res) => {
 }));
 
 // DBG
-app.get("/server/motiontest", asyncRoute(async (req, res) => {
-	cleanupMotion();
+app.get("/server/motionsettest", asyncRoute(async (req, res) => {
+	console.log("GET motiontest");
+	const { lat, lng } = req.query;
 
-	const closestEvent = await getClosestEvent(req.query.lat, req.query.lng);
+	if (lat === undefined || lng === undefined) {
+		return fail(res, 400, "Missing lat, lng");
+	}
+
+	const closestEvent = await getClosestEvent(lat, lng);
 
 	if (!closestEvent) {
 		return fail(res, 404, "No nearby event");
 	}
 
 	const key = closestEvent.key;
-	const devices = Object.values(motionByEvent[key] || {}).map(({ deviceId, motion }) => ({
-		deviceId,
-		motion
-	}));
 
-	if (!devices.length) {
-		return ok(res, { exists: false });
-	}
+	motionByEvent[key] ??= {};
+	const uuid = Math.random() + " TEST";
+	console.log(uuid);
+	motionByEvent[key][uuid] = {
+		deviceId: uuid,
+		motion: [2,2,2],
+		time: Date.now()
+	};
 
-	const result = await runMotionScore({ event_key: key, devices });
-
-	ok(res, {
-		exists: true,
-		event_key: key,
-		event: closestEvent,
-		...result
-	});
+	ok(res, { saved: true, event_key: key });
 }));
 
 app.get("/server/getscores", asyncRoute(async (req, res) => {
@@ -432,6 +431,7 @@ app.get("/server/getscores", asyncRoute(async (req, res) => {
 		if (!devices.length) {
 			return [event.key, 0];
 		}
+		console.log(event.key);
 		console.log(devices);
 		try {
 			const result = await runMotionScore({ event_key: event.key, devices });
