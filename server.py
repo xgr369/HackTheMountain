@@ -8,6 +8,7 @@ import time
 app = FastAPI()
 
 store = {}
+score_cache = {}
 WINDOW_SECONDS = 30
 
 class MotionData(BaseModel):
@@ -112,9 +113,44 @@ def receive_motion(data: MotionData):
     avg_magnitude = np.mean(np.abs(resampled)) if resampled else 0.0
     score = participant_count * avg_magnitude * sync_rate
 
+    # Cache the latest score for this location
+    score_cache[data.location_id] = {
+        "score": round(score, 3),
+        "participant_count": participant_count,
+        "sync_rate": round(sync_rate, 3)
+    }
+
     # Score = how many people × how strongly they move × how in sync they are
     return {
         "score": round(score, 3),
         "participant_count": participant_count,
         "sync_rate": round(sync_rate, 3)
     }
+
+@app.get("/api/score/{location_id}")
+def get_score(location_id: str):
+    now = time.time()
+    
+    # Check if there are any active devices at this location
+    active = {
+        dev_id: d for dev_id, d in store.get(location_id, {}).items()
+        if isinstance(d, dict) and "timestamp" in d
+        and now - d["timestamp"] < WINDOW_SECONDS
+    }
+
+    if not active:
+        return {
+            "score": 0.0,
+            "participant_count": 0,
+            "sync_rate": 0.0
+        }
+
+    cached = score_cache.get(location_id)
+    if cached is None:
+        return {
+            "score": 0.0,
+            "participant_count": 0,
+            "sync_rate": 0.0
+        }
+    return cached
+
